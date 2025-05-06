@@ -1,0 +1,116 @@
+body {
+    background-color: #E2D8C6;
+    font-family: 'Inter', sans-serif;
+    font-weight: 300;
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    position: fixed;
+    display: flex;
+    box-sizing: border-box;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 23px;
+    background: linear-gradient(to bottom, #524230, #352D24);
+    height: 80px;
+    width: 100vw;
+}
+
+logo {
+    display: flex; 
+    align-items: center;
+}
+
+logo img {
+    height: 56px;
+}
+
+logo span {
+    font-size: 56px;
+    background: linear-gradient(to right, #805300 9%, #A98746 30%, #BD9F67); 
+    -webkit-background-clip: text; 
+    background-clip: text; 
+    color: transparent;
+}
+
+nav {
+    display: flex;
+    gap: 15px;
+}
+
+nav a {
+    text-decoration: underline;
+    color: #BD9F67;
+    font-size: 18px;
+}
+
+a.active {
+	pointer-events: none;
+	cursor: default;
+    color: #A98746;
+    text-decoration: none;
+}
+
+.user-panel {
+    display: flex;
+}
+
+.user-panel button {
+    border: 1px solid #A98746;
+    font-size: 16px;
+    cursor: pointer;
+    height: 36px;
+}
+
+.user-panel .register {
+    background-color: #E2D8C6;
+    color: #A98746;
+    border-radius: 8px 0 0 8px;
+    width: 119px;
+}
+
+.user-panel .login {
+    background-color: #A98746;
+    color: #E2D8C6;
+    border-radius: 0 8px 8px 0;
+    width: 57px;
+}
+
+main {
+    padding-top: 80px;
+}
+
+footer {
+    background: linear-gradient(#E2D8C600, #41392F 7%, #352D24);
+    padding: 16px 13px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #E2D8C6;
+}
+
+.support {
+    display: flex;
+    gap: 20px;
+}
+
+.support span {
+    display: block;
+    margin: 5px 0;
+}
+
+.social-media {
+    display: flex;
+    gap: 20px;
+}
+
+.social-media a {
+    color: #E2D8C6;
+    text-decoration: none;
+}
+
+.social-media i {
+    font-size: 40px; 
+}
