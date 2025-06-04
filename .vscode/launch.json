@@ -5,9 +5,15 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "type": "firefox",
+            "request": "launch",
+            "name": "Firefox index.html",
+            "file": "c:\\Users\\Корыч\\Documents\\УлГУ\\web\\your_biblio\\index.html"
+        },
+        {
             "type": "chrome",
             "request": "launch",
-            "name": "Open index.html",
+            "name": "Chrome index.html",
             "file": "c:\\Users\\Корыч\\Documents\\УлГУ\\web\\your_biblio\\index.html"
         }
     ]

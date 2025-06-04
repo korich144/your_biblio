@@ -184,18 +184,18 @@
 }
 
 .image-container {
-    height: 100%;
-    width: 100%;
-    position: absolute;
-    top: 0;
-    left: 0;
-    z-index: 1;
+  height: 100%;
+  width: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
 }
 
 .image-container img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .book-card:hover {
@@ -237,7 +237,7 @@
     color: #524230;
     line-height: 1.5;
     display: -webkit-box;
-    -webkit-box-orient: vertical;
+    --webkit-box-orient: vertical;
     overflow: hidden;
 }
 
@@ -271,6 +271,11 @@
     color: #E2D8C6;
 }
 
+@keyframes modalFade {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
 /* my_biblio.css */
 .modal-overlay {
     position: fixed;
@@ -278,101 +283,206 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.7);
     display: none;
     justify-content: center;
     align-items: center;
+    z-index: 3000;
 }
 
 .modal {
     background: #F4EDE1;
-    border-radius: 8px;
-    padding: 24px;
-    max-width: 600px;
-    width: 100%;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 16px;
+    width: 90%;
+    max-width: 900px; /* Шире, чем было */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
     position: relative;
-    animation: modalFade 0.3s ease;
-}
-
-@keyframes modalFade {
-    from { opacity: 0; transform: translateY(-20px); }
-    to { opacity: 1; transform: translateY(0); }
+    overflow: hidden;
 }
 
 .modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 24px;
+    padding: 25px 30px 0;
+    text-align: center;
+}
+
+.modal-header h2 {
+    color: #805300;
+    font-size: 48px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    margin: 0;
+    padding: 25px 0 0 0;
 }
 
 .modal-close {
     background: none;
     border: none;
-    font-size: 20px;
-    color: #805300;
+    font-size: 32px;
+    color: #A98746;
     cursor: pointer;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background 0.2s;
+    float: right;
+}
+
+.modal-close:hover {
+    background: rgba(226, 216, 198, 0.2);
+}
+
+.modal-content {
+    display: flex; /* Горизонтальное расположение */
+    padding: 30px;
+    gap: 30px;
+}
+
+.image-upload-container {
+    flex: 1; /* Занимает 40% ширины */
+    display: flex;
+    flex-direction: column;
 }
 
 .image-upload {
-    border: 2px dashed #A98746;
-    padding: 24px;
-    text-align: center;
-    margin-bottom: 24px;
-    height: 200px;
+    border: 3px #A98746 dashed;
+    border-radius: 25px;
+    height: 0;
+    padding-top: 133.33%; /* Соотношение 4:3 (3/4=0.75) */
+    position: relative;
+    background: rgba(226, 216, 198, 0.3);
+    transition: all 0.3s;
+    cursor: pointer;
+}
+
+.image-upload .content {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    padding: 20px;
+    transition: all 0.3s;
+}
+
+.image-upload:hover {
+    background: rgba(169, 135, 70, 0.1);
+    border-color: #805300;
 }
 
 .image-upload .fas {
-    font-size: 48px;
+    font-size: 42px;
     color: #A98746;
-    margin-bottom: 12px;
+    margin-bottom: 15px;
 }
 
-.file-input {
-    display: none;
+.image-upload span {
+    color: #524230;
+    font-size: 16px;
+    text-align: center;
+    line-height: 1.4;
+}
+
+.image-upload.dragging {
+    background: rgba(169, 135, 70, 0.3) !important;
+    border: 2px solid #805300 !important;
+}
+
+.image-upload.has-image {
+    /*! padding-top: 0 !important; */
+    /*! height: 266px !important; */
+}
+
+.image-upload .content span {
+    margin-top: 10px;
+}
+
+.preview-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;   /* вертикальное центрирование */
+    justify-content: center; /* горизонтальное центрирование */
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+}
+
+.preview-container img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    border-radius: 8px;
+}
+
+.form-fields {
+    flex: 1; /* Занимает оставшиеся 60% */
+    display: flex;
+    flex-direction: column;
 }
 
 .form-group {
-    margin-bottom: 16px;
+    margin-bottom: 20px;
 }
 
 .form-group label {
     display: block;
-    margin-bottom: 4px;
-    color: #805300;
+    margin-bottom: 8px;
+    color: #524230;
+    font-weight: 500;
+    font-size: 16px;
+    padding-left: 25px;
 }
 
 .form-group input,
 .form-group select {
     width: 100%;
-    padding: 8px 12px;
+    padding: 12px 18px;
     border: 1px solid #A98746;
-    border-radius: 8px;
-    background: #E2D8C6;
-    color: #805300;
-    font-size: 14px;
+    border-radius: 32px; /* Максимальное скругление */
+    background: #F0E5D1;
+    color: #524230;
+    font-size: 16px;
+    box-sizing: border-box;
+    transition: all 0.2s;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: #805300;
+    box-shadow: 0 0 0 2px rgba(128, 83, 0, 0.2);
 }
 
 .modal-footer {
+    padding: 20px 30px;
+    background: #A98746; /* Тёмный фон */
     text-align: right;
-    margin-top: 24px;
 }
 
 .create-btn {
-    background: #A98746;
-    color: #E2D8C6;
-    padding: 12px 24px;
+    background: #F4EDE1;
+    color: #A98746;
+    padding: 8px 30px;
     border: none;
     border-radius: 8px;
+    font-size: 16px;
+    /*! font-weight: 600; */
     cursor: pointer;
-    transition: background 0.2s;
+    transition: all 0.3s;
 }
 
 .create-btn:hover {
-    background: #805300;
+    background: #E2D8C6;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
