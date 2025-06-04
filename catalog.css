@@ -352,7 +352,7 @@
     height: 0;
     padding-top: 133.33%; /* Соотношение 4:3 (3/4=0.75) */
     position: relative;
-    background: rgba(226, 216, 198, 0.3);
+    background: #F0E5D1;
     transition: all 0.3s;
     cursor: pointer;
 }
@@ -392,11 +392,6 @@
 .image-upload.dragging {
     background: rgba(169, 135, 70, 0.3) !important;
     border: 2px solid #805300 !important;
-}
-
-.image-upload.has-image {
-    /*! padding-top: 0 !important; */
-    /*! height: 266px !important; */
 }
 
 .image-upload .content span {
