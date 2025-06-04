@@ -335,9 +335,29 @@
 }
 
 .modal-content {
+    scrollbar-width: thin;
+    scrollbar-color: #A98746 #F0E5D1;
     display: flex; /* Горизонтальное расположение */
     padding: 30px;
     gap: 30px;
+}
+
+.modal-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.modal-content::-webkit-scrollbar-track {
+    background: #F0E5D1;
+    border-radius: 4px;
+}
+
+.modal-content::-webkit-scrollbar-thumb {
+    background: #A98746;
+    border-radius: 4px;
+}
+
+.modal-content::-webkit-scrollbar-thumb:hover {
+    background: #805300;
 }
 
 .image-upload-container {
@@ -480,4 +500,194 @@
     background: #E2D8C6;
     transform: translateY(-2px);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.form-group label {
+    padding-left: 0 !important;
+}
+
+.form-group p {
+    color: #524230;
+    font-size: 16px;
+    margin: 8px 0 0 0;
+    padding: 0;
+    line-height: 1.5;
+}
+
+.book-title {
+    font-size: 28px;
+    font-weight: bold;
+    color: #805300;
+    margin-bottom: 10px;
+}
+
+.book-author {
+    font-size: 22px;
+    color: #524230;
+    margin-bottom: 25px;
+    position: relative;
+    padding-left: 75px;
+}
+    
+.book-author:before {
+    content: "Автор:";
+    font-weight: bold;
+    color: #805300;
+    position: absolute;
+    left: 0;
+}
+
+/* Стили для деталей книги */
+.book-details {
+    margin-bottom: 25px;
+}
+
+.detail-item {
+    margin-bottom: 10px;
+    font-size: 16px;
+}
+
+.detail-label {
+    font-weight: bold;
+    color: #805300;
+    margin-right: 5px;
+}
+
+.detail-value {
+    color: #524230;
+}
+
+/* Стили для описания */
+.book-description {
+    border-top: 1px solid #A98746;
+    padding-top: 15px;
+}
+
+.description-label {
+    font-weight: bold;
+    color: #805300;
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+.book-description p {
+    color: #524230;
+    line-height: 1.6;
+}
+
+.book-title-input {
+    font-size: 20px !important;
+    font-weight: bold !important;
+    color: #805300 !important;
+}
+
+.book-author-input {
+    font-size: 18px !important;
+    color: #524230 !important;
+}
+
+/* Фикс для кнопки закрытия */
+.modal-close {
+    position: absolute !important;
+    top: 20px !important;
+    right: 20px !important;
+    float: none !important;
+}
+
+/* Стили для кнопок управления */
+.modal-footer .create-btn {
+    margin-left: 10px;
+}
+
+#delete-book {
+    background-color: #ff4d4d;
+    color: white;
+}
+
+#delete-book:hover {
+    background-color: #ff3333;
+}
+
+/* Стили для окна редактирования */
+#edit-book-modal .modal-footer {
+    display: flex;
+    justify-content: space-between;
+}
+
+#cancel-edit {
+    background-color: #e2d8c6;
+    color: #524230;
+}
+
+#cancel-edit:hover {
+    background-color: #d0c6b4;
+}
+
+.form-group textarea {
+    width: 100%;
+    padding: 12px 18px;
+    border: 1px solid #A98746;
+    border-radius: 12px;
+    background: #F0E5D1;
+    color: #524230;
+    font-size: 16px;
+    font-family: 'Inter', sans-serif;
+    resize: vertical;
+    min-height: 100px;
+    box-sizing: border-box;
+}
+
+.form-group textarea:focus {
+    outline: none;
+    border-color: #805300;
+    box-shadow: 0 0 0 2px rgba(128, 83, 0, 0.2);
+}
+
+#create-book-btn {
+    cursor: pointer;
+}
+
+.scrollable-fields {
+    max-height: 60vh; /* Ограничиваем высоту */
+    overflow-y: auto; /* Включаем вертикальную прокрутку */
+    padding-right: 10px; /* Отступ для скроллбара */
+}
+
+/* Кастомный скроллбар для полей */
+.scrollable-fields::-webkit-scrollbar {
+    width: 8px;
+}
+
+.scrollable-fields::-webkit-scrollbar-track {
+    background: #F0E5D1;
+    border-radius: 4px;
+}
+
+.scrollable-fields::-webkit-scrollbar-thumb {
+    background: #A98746;
+    border-radius: 4px;
+}
+
+.scrollable-fields::-webkit-scrollbar-thumb:hover {
+    background: #805300;
+}
+
+/* Для Firefox */
+.scrollable-fields {
+    scrollbar-width: thin;
+    scrollbar-color: #A98746 #F0E5D1;
+}
+
+/* Улучшаем внешний вид текстовых полей */
+.form-group textarea {
+    min-height: 120px; /* Увеличиваем минимальную высоту */
+    max-height: 200px; /* Ограничиваем максимальную высоту */
+    overflow-y: auto; /* Добавляем прокрутку при необходимости */
+    resize: vertical; /* Разрешаем изменение размера только по вертикали */
+}
+
+/* Увеличиваем высоту модального окна */
+.modal-content {
+    max-height: 80vh;
+    overflow: hidden; /* Скрываем общий скролл */
 }

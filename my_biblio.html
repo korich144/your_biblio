@@ -86,7 +86,7 @@
         
         <div class="actions">
             <button class="add"><i class="fas fa-plus"></i> Добавить</button>
-            <button class="create"><i class="fas fa-file"></i> Создать</button>
+            <button class="create" id="create-book-btn"><i class="fas fa-file"></i> Создать</button>
         </div>
     </div>
 
@@ -255,7 +255,7 @@
         </div>
     </footer>
 
-    <div class="modal-overlay">
+    <div class="modal-overlay" id="create-book-modal">
         <div class="modal">
             <div class="modal-header">
                 <button class="modal-close">&times;</button>
@@ -277,7 +277,7 @@
                 </div>
                 
                 <!-- Контейнер для полей ввода (СПРАВА) -->
-                <div class="form-fields">
+                <div class="form-fields scrollable-fields">
                     <div class="form-group">
                         <label>Название книги</label>
                         <input type="text" placeholder="Введите название">
@@ -315,6 +315,10 @@
                             <option>Детектив</option>
                         </select>
                     </div>
+                    <div class="form-group">
+                        <label>Описание</label>
+                        <textarea placeholder="Введите описание книги" rows="4"></textarea>
+                    </div>
                 </div>
             </div>
             <div class="modal-footer">
@@ -322,49 +326,160 @@
             </div>
         </div>
     </div>
+    <div class="modal-overlay" id="book-details-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <button class="modal-close">&times;</button>
+                <h2>Просмотр книги</h2>
+            </div>
+            <div class="modal-content">
+                <div class="image-upload-container">
+                    <div class="image-upload">
+                        <div class="preview-container">
+                            <img src="src/book.jpg" alt="Обложка книги">
+                        </div>
+                    </div>
+                </div>
+                <div class="form-fields">
+                    <div class="book-title">Название книги</div>
+                    <div class="book-author">Автор книги</div>
+                    
+                    <div class="book-details">
+                        <div class="detail-item">
+                            <span class="detail-label">Издательство:</span>
+                            <span class="detail-value">Издательство</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Год издания:</span>
+                            <span class="detail-value">2023</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Количество страниц:</span>
+                            <span class="detail-value">350</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Жанр:</span>
+                            <span class="detail-value">Фантастика</span>
+                        </div>
+                    </div>
+                    
+                    <div class="book-description">
+                        <div class="description-label">Описание</div>
+                        <p>Есть над чем задуматься: акционеры крупнейших компаний заблокированы в рамках своих собственных рациональных ограничений.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="create-btn" id="send-to-catalog">Отправить в каталог</button>
+                <button class="create-btn" id="edit-book">Изменить</button>
+                <button class="create-btn" id="delete-book" style="background-color: #ff4d4d;">Удалить</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Обновлённое модальное окно редактирования -->
+    <div class="modal-overlay" id="edit-book-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <button class="modal-close">&times;</button>
+                <h2>Изменение книги</h2>
+            </div>
+            <div class="modal-content">
+                <div class="image-upload-container">
+                    <div class="image-upload" id="edit-drop-area">
+                        <div class="content">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <span>Перетащите новую обложку сюда<br>или нажмите для выбора<br>(формат 4:3)</span>
+                            <input type="file" class="file-input" id="edit-file-input" accept="image/*" style="display: none;">
+                        </div>
+                        <div class="preview-container" style="display: none;">
+                            <img id="edit-preview-image" alt="Предпросмотр обложки">
+                        </div>
+                    </div>
+                </div>
+                <div class="form-fields scrollable-fields">
+                    <div class="form-group">
+                        <label>Название книги</label>
+                        <input type="text" placeholder="Введите название" value="Название книги" class="book-title-input">
+                    </div>
+                    <div class="form-group">
+                        <label>Автор</label>
+                        <input type="text" placeholder="Автор" value="Автор книги" class="book-author-input">
+                    </div>
+                    <div class="form-group">
+                        <label>Издательство</label>
+                        <input type="text" placeholder="Название издательства" value="Издательство">
+                    </div>
+                    <div class="form-group">
+                        <label>Год издания</label>
+                        <input type="number" placeholder="Год выпуска" value="2023">
+                    </div>
+                    <div class="form-group">
+                        <label>Количество страниц</label>
+                        <input type="number" placeholder="Введите число" value="350">
+                    </div>
+                    <div class="form-group">
+                        <label>Жанр</label>
+                        <select>
+                            <option>Выберите жанр</option>
+                            <option selected>Фантастика</option>
+                            <option>Детектив</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Описание</label>
+                        <textarea placeholder="Введите описание книги" rows="4">Текущее описание книги</textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="create-btn" id="cancel-edit">Отмена</button>
+                <button class="create-btn" id="save-changes">Сохранить</button>
+            </div>
+        </div>
+    </div>
 
     <script>
-        // Инициализация фильтров
-        document.querySelectorAll('.filter').forEach(filter => {
-            const dropdown = filter.querySelector('.dropdown');
-            const label = filter.querySelector('span');
-            
-            filter.addEventListener('click', () => {
-                // Скрываем другие открытые меню
-                document.querySelectorAll('.filter .dropdown.open').forEach(el => {
-                    if (el !== dropdown) el.classList.remove('open');
-                });
-                
-                // Меняем состояние текущего меню
-                dropdown.classList.toggle('open');
-            });
+        // ===== ОБЩИЕ ФУНКЦИИ ДЛЯ МОДАЛЬНЫХ ОКОН =====
+    // ===== ОБЩИЕ ФУНКЦИИ ДЛЯ МОДАЛЬНЫХ ОКОН =====
+    function openModal(modalId) {
+        document.getElementById(modalId).style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
 
-            // Обработка выбора элемента из списка
-            dropdown.addEventListener('click', (e) => {
-                if (e.target.tagName === 'LI') {
-                    const value = e.target.dataset.value;
-                    label.textContent = e.target.textContent;
-                    filter.dataset.selected = value;
-                    
-                    // Скрываем меню после выбора
-                    dropdown.classList.remove('open');
-                }
-            });
-        });
+    function closeModal(modalId) {
+        document.getElementById(modalId).style.display = 'none';
+        document.body.style.overflow = '';
+    }
+
+    // ===== ИНИЦИАЛИЗАЦИЯ ФИЛЬТРОВ =====
+    document.querySelectorAll('.filter').forEach(filter => {
+        const dropdown = filter.querySelector('.dropdown');
+        const label = filter.querySelector('span');
         
-        document.addEventListener('click', (e) => {
-            // Закрываем меню при клике вне его
-            if (!e.target.closest('.filter')) {
-                document.querySelectorAll('.dropdown.open').forEach(el => {
-                    el.classList.remove('open');
-                });
+        filter.addEventListener('click', (e) => {
+            e.stopPropagation();
+            document.querySelectorAll('.filter .dropdown.open').forEach(el => {
+                if (el !== dropdown) el.classList.remove('open');
+            });
+            dropdown.classList.toggle('open');
+        });
+
+        dropdown.addEventListener('click', (e) => {
+            if (e.target.tagName === 'LI') {
+                label.textContent = e.target.textContent;
+                filter.dataset.selected = e.target.dataset.value;
+                dropdown.classList.remove('open');
             }
         });
+    });
 
-        const searchInput = document.querySelector('.search input');
-        const clearButton = document.querySelector('.search .clear');
-        const searchElement = document.querySelector('.search');
+    // ===== ПОИСК И ОЧИСТКА =====
+    const searchInput = document.querySelector('.search input');
+    const clearButton = document.querySelector('.search .clear');
+    const searchElement = document.querySelector('.search');
 
+    if (searchInput && clearButton) {
         searchInput.addEventListener('input', () => {
             if (searchInput.value.trim()) {
                 clearButton.style.display = 'flex';
@@ -382,7 +497,6 @@
             searchInput.focus();
         });
 
-        // Анимация поиска
         searchInput.addEventListener('focus', () => {
             searchElement.classList.add('focused');
         });
@@ -392,100 +506,91 @@
                 searchElement.classList.remove('focused');
             }
         });
+    }
 
-        const modalOverlay = document.querySelector('.modal-overlay');
-        const createBtn = document.querySelector('.create'); // Кнопка "Создать" в панели фильтров
-        const modalClose = document.querySelector('.modal-close');
-        const imageUpload = document.querySelector('.image-upload');
-        const fileInput = document.querySelector('.file-input');
+    // ===== МОДАЛЬНОЕ ОКНО СОЗДАНИЯ КНИГИ =====
+    const createBtn = document.getElementById('create-book-btn');
+    const modalCloseButtons = document.querySelectorAll('.modal-close');
 
-        // Открытие модального окна
-        if (createBtn) {
-            createBtn.addEventListener('click', () => {
-                modalOverlay.style.display = 'flex';
-                document.body.style.overflow = 'hidden';
-            });
-        }
+    // Обработчики для кнопки создания
+    if (createBtn) {
+        createBtn.addEventListener('click', () => {
+            openModal('create-book-modal');
+        });
+    }
 
-        // Закрытие модального окна
-        if (modalClose) {
-            modalClose.addEventListener('click', () => {
-                modalOverlay.style.display = 'none';
-                document.body.style.overflow = '';
-            });
-        }
+    // Обработчики для кнопок закрытия
+    modalCloseButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const modal = this.closest('.modal-overlay');
+            closeModal(modal.id);
+        });
+    });
 
-        // Закрытие при клике вне окна
-        modalOverlay.addEventListener('click', (e) => {
-            if (e.target === modalOverlay) {
-                modalOverlay.style.display = 'none';
-                document.body.style.overflow = '';
+    // Закрытие по клику вне окна
+    document.querySelectorAll('.modal-overlay').forEach(modal => {
+        modal.addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal(this.id);
             }
         });
+    });
 
-        // Открытие выбора файла при клике на область загрузки
-        if (imageUpload) {
-            imageUpload.addEventListener('click', () => {
-                fileInput.click();
-            });
-        }
-
-        // Обработка выбора файла
-        if (fileInput) {
-            fileInput.addEventListener('change', (e) => {
-                if (e.target.files.length > 0) {
-                    const content = imageUpload.querySelector('.content');
-                    content.innerHTML = `
-                        <i class="fas fa-check-circle" style="color:#4CAF50;"></i>
-                        <span>Файл загружен<br>${e.target.files[0].name}</span>
-                    `;
+    // Закрытие по Esc
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            document.querySelectorAll('.modal-overlay').forEach(modal => {
+                if (modal.style.display === 'flex') {
+                    closeModal(modal.id);
                 }
             });
         }
+    });
 
-        // Закрытие при нажатии Esc
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && modalOverlay.style.display === 'flex') {
-                modalOverlay.style.display = 'none';
-                document.body.style.overflow = '';
-            }
+    // ===== ПРОСМОТР КНИГИ =====
+    document.querySelectorAll('.book-card').forEach(card => {
+        card.addEventListener('click', function() {
+            openModal('book-details-modal');
         });
+    });
 
-        // ===== DRAG AND DROP FUNCTIONALITY =====
-        const dropArea = document.getElementById('drop-area');
-        const previewImage = document.getElementById('preview-image');
-        const previewContainer = document.querySelector('.preview-container');
-        const uploadContent = document.querySelector('.image-upload .content');
+    // ===== DRAG AND DROP ДЛЯ СОЗДАНИЯ КНИГИ =====
+    function initDragAndDrop(dropAreaId, previewId) {
+        const dropArea = document.getElementById(dropAreaId);
+        if (!dropArea) return;
+        
+        const fileInput = dropArea.querySelector('.file-input');
+        const previewImage = document.getElementById(previewId);
+        const previewContainer = dropArea.querySelector('.preview-container');
+        const uploadContent = dropArea.querySelector('.content');
 
-        // Обработчики для drag and drop
+        // Обработчики событий
         ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
             dropArea.addEventListener(eventName, preventDefaults, false);
         });
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropArea.addEventListener(eventName, () => highlight(dropArea), false);
+        });
+        
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, () => unhighlight(dropArea), false);
+        });
+
+        dropArea.addEventListener('drop', handleDrop, false);
 
         function preventDefaults(e) {
             e.preventDefault();
             e.stopPropagation();
         }
 
-        // Подсветка при наведении
-        ['dragenter', 'dragover'].forEach(eventName => {
-            dropArea.addEventListener(eventName, highlight, false);
-        });
-        
-        ['dragleave', 'drop'].forEach(eventName => {
-            dropArea.addEventListener(eventName, unhighlight, false);
-        });
-
-        function highlight() {
-            dropArea.classList.add('dragging');
+        function highlight(element) {
+            element.classList.add('dragging');
         }
 
-        function unhighlight() {
-            dropArea.classList.remove('dragging');
+        function unhighlight(element) {
+            element.classList.remove('dragging');
         }
-
-        // Обработка сброса файла
-        dropArea.addEventListener('drop', handleDrop, false);
 
         function handleDrop(e) {
             const dt = e.dataTransfer;
@@ -497,7 +602,6 @@
             }
         }
 
-        // Обработка выбора файла через input
         fileInput.addEventListener('change', function() {
             handleFiles(this.files);
         });
@@ -510,12 +614,9 @@
                     const reader = new FileReader();
                     
                     reader.onload = function(e) {
-                        // Показываем превью
-                        previewImage.src = e.target.result;
-                        previewContainer.style.display = 'flex';
-                        uploadContent.style.display = 'none';
-                        
-                        // Изменяем стиль контейнера
+                        if (previewImage) previewImage.src = e.target.result;
+                        if (previewContainer) previewContainer.style.display = 'flex';
+                        if (uploadContent) uploadContent.style.display = 'none';
                         dropArea.classList.add('has-image');
                     };
                     
@@ -525,25 +626,54 @@
                 }
             }
         }
+    }
 
-        // Сброс загрузки при закрытии модального окна
-        modalOverlay.addEventListener('click', function(e) {
-            if (e.target === modalOverlay) {
-                resetFileUpload();
-            }
+    // Инициализация для окна создания
+    initDragAndDrop('drop-area', 'preview-image');
+    
+    // Инициализация для окна редактирования
+    initDragAndDrop('edit-drop-area', 'edit-preview-image');
+
+    // ===== ПРОСМОТР КНИГИ =====
+    document.querySelectorAll('.book-card').forEach(card => {
+        card.addEventListener('click', function() {
+            // Загрузка данных книги (заглушка)
+            const title = this.querySelector('h3')?.textContent || 'Название книги';
+            document.querySelector('#book-details-modal .book-title').textContent = title;
+            
+            // Открываем модальное окно
+            openModal('book-details-modal');
         });
+    });
 
-        modalClose.addEventListener('click', function() {
-            resetFileUpload();
-        });
+    // Кнопки в окне просмотра
+    document.getElementById('send-to-catalog')?.addEventListener('click', function() {
+        alert('Книга отправлена на проверку и скоро появится в каталоге');
+    });
 
-        function resetFileUpload() {
-            fileInput.value = '';
-            previewContainer.style.display = 'none';
-            uploadContent.style.display = 'flex';
-            dropArea.classList.remove('has-image');
-            dropArea.classList.remove('dragging');
+    document.getElementById('edit-book')?.addEventListener('click', function() {
+        closeModal('book-details-modal');
+        openModal('edit-book-modal');
+    });
+
+    document.getElementById('delete-book')?.addEventListener('click', function() {
+        if (confirm('Вы уверены, что хотите удалить эту книгу?')) {
+            closeModal('book-details-modal');
+            alert('Книга успешно удалена');
         }
+    });
+
+    // ===== РЕДАКТИРОВАНИЕ КНИГИ =====
+    // Кнопки в окне редактирования
+    document.getElementById('cancel-edit')?.addEventListener('click', function() {
+        closeModal('edit-book-modal');
+        openModal('book-details-modal');
+    });
+
+    document.getElementById('save-changes')?.addEventListener('click', function() {
+        closeModal('edit-book-modal');
+        alert('Изменения успешно сохранены');
+    });
     </script>
 </body>
 </html>

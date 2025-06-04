@@ -250,6 +250,56 @@
         </div>
     </footer>
 
+    <div class="modal-overlay" id="book-details-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <button class="modal-close">&times;</button>
+                <h2>Просмотр книги</h2>
+            </div>
+            <div class="modal-content">
+                <div class="image-upload-container">
+                    <div class="image-upload">
+                        <div class="preview-container">
+                            <img src="src/book.jpg" alt="Обложка книги">
+                        </div>
+                    </div>
+                </div>
+                <div class="form-fields">
+                    <div class="book-title">Название книги</div>
+                    <div class="book-author">Автор книги</div>
+                    
+                    <div class="book-details">
+                        <div class="detail-item">
+                            <span class="detail-label">Издательство:</span>
+                            <span class="detail-value">Издательство</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Год издания:</span>
+                            <span class="detail-value">2023</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Количество страниц:</span>
+                            <span class="detail-value">350</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Жанр:</span>
+                            <span class="detail-value">Фантастика</span>
+                        </div>
+                    </div>
+                    
+                    <div class="book-description">
+                        <div class="description-label">Описание</div>
+                        <p>Есть над чем задуматься: акционеры крупнейших компаний заблокированы в рамках своих собственных рациональных ограничений.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="create-btn" id="add-to-library">Добавить</button>
+                <button class="create-btn" id="share-book">Поделиться</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         // Инициализация фильтров
         document.querySelectorAll('.filter').forEach(filter => {
@@ -318,6 +368,68 @@
             if (!searchInput.value.trim()) {
                 searchElement.classList.remove('focused');
             }
+        });
+        // Добавьте обработчики для модального окна
+        const modalCloseButtons = document.querySelectorAll('.modal-close');
+        modalCloseButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const modal = this.closest('.modal-overlay');
+                closeModal(modal.id);
+            });
+        });
+
+        // Функции для работы с модальными окнами
+        function openModal(modalId) {
+            document.getElementById(modalId).style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+            document.body.style.overflow = '';
+        }
+
+        // Обработчики для кнопок в модальном окне
+        document.getElementById('add-to-library')?.addEventListener('click', function() {
+            alert('Книга добавлена в вашу библиотеку!');
+            closeModal('book-details-modal');
+        });
+
+        document.getElementById('share-book')?.addEventListener('click', function() {
+            alert('Ссылка на книгу скопирована в буфер обмена');
+            // Здесь будет реальная логика копирования ссылки
+        });
+
+        // Закрытие по клику вне окна
+        document.querySelectorAll('.modal-overlay').forEach(modal => {
+            modal.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeModal(this.id);
+                }
+            });
+        });
+
+        // Закрытие по Esc
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                document.querySelectorAll('.modal-overlay').forEach(modal => {
+                    if (modal.style.display === 'flex') {
+                        closeModal(modal.id);
+                    }
+                });
+            }
+        });
+
+        // Обработчик клика на карточку книги
+        document.querySelectorAll('.book-card').forEach(card => {
+            card.addEventListener('click', function() {
+                // Загрузка данных книги (заглушка)
+                const title = this.querySelector('h3')?.textContent || 'Название книги';
+                document.querySelector('#book-details-modal .book-title').textContent = title;
+                
+                // Открываем модальное окно
+                openModal('book-details-modal');
+            });
         });
     </script>
 </body>
