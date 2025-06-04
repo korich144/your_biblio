@@ -6,6 +6,7 @@ body {
     padding: 0;
     display: flex;
     flex-direction: column;
+    min-width: 987px;
     min-height: 100vh;
 }
 
@@ -19,6 +20,7 @@ header {
     background: linear-gradient(to bottom, #524230, #352D24);
     height: 80px;
     width: 100vw;
+    min-width: 987px;
     z-index: 1000;
 }
 
