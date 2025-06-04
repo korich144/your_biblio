@@ -1,4 +1,3 @@
-<!-- my_biblio.html -->
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -7,32 +6,14 @@
     <title>Моя библиотека</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="basic_styles.css">
-    <link rel="stylesheet" href="catalog.css">
+    <link rel="stylesheet" href="styles/base.css">
+    <link rel="stylesheet" href="styles/catalog.css">
 </head>
 <body>
-    <header>
-        <logo>
-            <img src="src/logo.svg" alt="Logo">
-            <span>Твой каталог</span>
-        </logo>
-        <div style="display: flex; align-items: center; gap: 47px;">
-            <nav>
-                <a href="index.html">Главная</a>
-                <a href="#" class="active">Моя библиотека</a>
-                <a href="catalog.html">Каталог</a>
-            </nav>
-            <div class="user-panel">
-                <button class="register">Регистрация</button>
-                <button class="login">Вход</button>
-            </div>
-        </div>
-    </header>
+    <div id="header-container"></div>
 
-    <!-- Панель фильтров -->
     <div class="filter-panel">
         <div class="filters">
-            <!-- Фильтр авторов -->
             <div class="filter" data-filter="author">
                 <i class="fas fa-user"></i>
                 <span>Автор</span>
@@ -47,7 +28,6 @@
                 </ul>
             </div>
 
-            <!-- Фильтр жанров -->
             <div class="filter" data-filter="genre">
                 <i class="fas fa-book"></i>
                 <span>Жанр</span>
@@ -62,7 +42,6 @@
                 </ul>
             </div>
 
-            <!-- Фильтр изданий -->
             <div class="filter" data-filter="edition">
                 <i class="fas fa-calendar-alt"></i>
                 <span>Издание</span>
@@ -91,129 +70,7 @@
     </div>
 
     <main>
-        <section class="books">
-            <div class="book-card">
-                <div class="image-container">
-                    <img src="src/book.jpg" alt="Book cover">
-                </div>
-                <div class="book-info">
-                    <h3>Название книги</h3>
-                    <p><span>Автор:</span> Автор</p>
-                    <p><span>Издание:</span> Издание</p>
-                    <p class="description">Есть над чем задуматься: акционеры крупнейших компаний заблокированы в рамках своих собственных рациональных ограничений.</p>
-                </div>
-            </div> 
-            <div class="book-card">
-                <div class="image-container">
-                    <img src="src/book.jpg" alt="Book cover">
-                </div>
-                <div class="book-info">
-                    <h3>Название книги</h3>
-                    <p><span>Автор:</span> Автор</p>
-                    <p><span>Издание:</span> Издание</p>
-                    <p class="description">Есть над чем задуматься: акционеры крупнейших компаний заблокированы в рамках своих собственных рациональных ограничений.</p>
-                </div>
-            </div> 
-            <div class="book-card">
-                <div class="image-container">
-                    <img src="src/book.jpg" alt="Book cover">
-                </div>
-                <div class="book-info">
-                    <h3>Название книги</h3>
-                    <p><span>Автор:</span> Автор</p>
-                    <p><span>Издание:</span> Издание</p>
-                    <p class="description">Есть над чем задуматься: акционеры крупнейших компаний заблокированы в рамках своих собственных рациональных ограничений.</p>
-                </div>
-            </div> 
-            <div class="book-card">
-                <div class="image-container">
-                    <img src="src/book.jpg" alt="Book cover">
-                </div>
-                <div class="book-info">
-                    <h3>Название книги</h3>
-                    <p><span>Автор:</span> Автор</p>
-                    <p><span>Издание:</span> Издание</p>
-                    <p class="description">Есть над чем задуматься: акционеры крупнейших компаний заблокированы в рамках своих собственных рациональных ограничений.</p>
-                </div>
-            </div> 
-            <div class="book-card">
-                <div class="image-container">
-                    <img src="src/book.jpg" alt="Book cover">
-                </div>
-                <div class="book-info">
-                    <h3>Название книги</h3>
-                    <p><span>Автор:</span> Автор</p>
-                    <p><span>Издание:</span> Издание</p>
-                    <p class="description">Есть над чем задуматься: акционеры крупнейших компаний заблокированы в рамках своих собственных рациональных ограничений.</p>
-                </div>
-            </div> 
-            <div class="book-card">
-                <div class="image-container">
-                    <img src="src/book.jpg" alt="Book cover">
-                </div>
-                <div class="book-info">
-                    <h3>Название книги</h3>
-                    <p><span>Автор:</span> Автор</p>
-                    <p><span>Издание:</span> Издание</p>
-                    <p class="description">Есть над чем задуматься: акционеры крупнейших компаний заблокированы в рамках своих собственных рациональных ограничений.</p>
-                </div>
-            </div> 
-            <div class="book-card">
-                <div class="image-container">
-                    <img src="src/book.jpg" alt="Book cover">
-                </div>
-                <div class="book-info">
-                    <h3>Название книги</h3>
-                    <p><span>Автор:</span> Автор</p>
-                    <p><span>Издание:</span> Издание</p>
-                    <p class="description">Есть над чем задуматься: акционеры крупнейших компаний заблокированы в рамках своих собственных рациональных ограничений.</p>
-                </div>
-            </div> 
-            <div class="book-card">
-                <div class="image-container">
-                    <img src="src/book.jpg" alt="Book cover">
-                </div>
-                <div class="book-info">
-                    <h3>Название книги</h3>
-                    <p><span>Автор:</span> Автор</p>
-                    <p><span>Издание:</span> Издание</p>
-                    <p class="description">Есть над чем задуматься: акционеры крупнейших компаний заблокированы в рамках своих собственных рациональных ограничений.</p>
-                </div>
-            </div> 
-            <div class="book-card">
-                <div class="image-container">
-                    <img src="src/book.jpg" alt="Book cover">
-                </div>
-                <div class="book-info">
-                    <h3>Название книги</h3>
-                    <p><span>Автор:</span> Автор</p>
-                    <p><span>Издание:</span> Издание</p>
-                    <p class="description">Есть над чем задуматься: акционеры крупнейших компаний заблокированы в рамках своих собственных рациональных ограничений.</p>
-                </div>
-            </div> 
-            <div class="book-card">
-                <div class="image-container">
-                    <img src="src/book.jpg" alt="Book cover">
-                </div>
-                <div class="book-info">
-                    <h3>Название книги</h3>
-                    <p><span>Автор:</span> Автор</p>
-                    <p><span>Издание:</span> Издание</p>
-                    <p class="description">Есть над чем задуматься: акционеры крупнейших компаний заблокированы в рамках своих собственных рациональных ограничений.</p>
-                </div>
-            </div> 
-            <div class="book-card">
-                <div class="image-container">
-                    <img src="src/book.jpg" alt="Book cover">
-                </div>
-                <div class="book-info">
-                    <h3>Название книги</h3>
-                    <p><span>Автор:</span> Автор</p>
-                    <p><span>Издание:</span> Издание</p>
-                    <p class="description">Есть над чем задуматься: акционеры крупнейших компаний заблокированы в рамках своих собственных рациональных ограничений.</p>
-                </div>
-            </div>        
-        </section>
+        <section class="books"></section>
 
         <div class="pagination">
             <button class="prev"><<</button>
@@ -230,30 +87,7 @@
         </div>
     </main>
 
-    <footer>
-        <div class="support">
-            <div>
-                <span>Поддержка</span>
-                <span>Email:</span>
-                <span>Номер телефона</span>
-                <span>Часы работы</span>
-            </div>
-            <div>
-                <span>help@example.com</span>
-                <span>+7 (800) 555 35-35</span>
-                <span>10:00 - 18:00</span>
-            </div>
-        </div>
-        <div class="social-media">
-            <a href="https://tiktok.com " target="_blank"><i class="fab fa-tiktok"></i></a>
-            <a href="https://twitter.com " target="_blank"><i class="fab fa-twitter"></i></a>
-            <a href="https://instagram.com " target="_blank"><i class="fab fa-instagram"></i></a>
-            <a href="https://discord.com " target="_blank"><i class="fab fa-discord"></i></a>
-            <a href="https://google.com " target="_blank"><i class="fab fa-google"></i></a>
-            <a href="https://reddit.com " target="_blank"><i class="fab fa-reddit"></i></a>
-            <a href="https://vk.com " target="_blank"><i class="fab fa-vk"></i></a>
-        </div>
-    </footer>
+    <div id="footer-container"></div>
 
     <div class="modal-overlay" id="create-book-modal">
         <div class="modal">
@@ -262,7 +96,6 @@
                 <h2>Создание книги</h2>
             </div>
             <div class="modal-content">
-                <!-- Контейнер для загрузки изображения (СЛЕВА) -->
                 <div class="image-upload-container">
                     <div class="image-upload" id="drop-area">
                         <div class="content">
@@ -276,7 +109,6 @@
                     </div>
                 </div>
                 
-                <!-- Контейнер для полей ввода (СПРАВА) -->
                 <div class="form-fields scrollable-fields">
                     <div class="form-group">
                         <label>Название книги</label>
@@ -326,6 +158,7 @@
             </div>
         </div>
     </div>
+    
     <div class="modal-overlay" id="book-details-modal">
         <div class="modal">
             <div class="modal-header">
@@ -377,7 +210,6 @@
         </div>
     </div>
 
-    <!-- Обновлённое модальное окно редактирования -->
     <div class="modal-overlay" id="edit-book-modal">
         <div class="modal">
             <div class="modal-header">
@@ -439,241 +271,7 @@
         </div>
     </div>
 
-    <script>
-        // ===== ОБЩИЕ ФУНКЦИИ ДЛЯ МОДАЛЬНЫХ ОКОН =====
-    // ===== ОБЩИЕ ФУНКЦИИ ДЛЯ МОДАЛЬНЫХ ОКОН =====
-    function openModal(modalId) {
-        document.getElementById(modalId).style.display = 'flex';
-        document.body.style.overflow = 'hidden';
-    }
-
-    function closeModal(modalId) {
-        document.getElementById(modalId).style.display = 'none';
-        document.body.style.overflow = '';
-    }
-
-    // ===== ИНИЦИАЛИЗАЦИЯ ФИЛЬТРОВ =====
-    document.querySelectorAll('.filter').forEach(filter => {
-        const dropdown = filter.querySelector('.dropdown');
-        const label = filter.querySelector('span');
-        
-        filter.addEventListener('click', (e) => {
-            e.stopPropagation();
-            document.querySelectorAll('.filter .dropdown.open').forEach(el => {
-                if (el !== dropdown) el.classList.remove('open');
-            });
-            dropdown.classList.toggle('open');
-        });
-
-        dropdown.addEventListener('click', (e) => {
-            if (e.target.tagName === 'LI') {
-                label.textContent = e.target.textContent;
-                filter.dataset.selected = e.target.dataset.value;
-                dropdown.classList.remove('open');
-            }
-        });
-    });
-
-    // ===== ПОИСК И ОЧИСТКА =====
-    const searchInput = document.querySelector('.search input');
-    const clearButton = document.querySelector('.search .clear');
-    const searchElement = document.querySelector('.search');
-
-    if (searchInput && clearButton) {
-        searchInput.addEventListener('input', () => {
-            if (searchInput.value.trim()) {
-                clearButton.style.display = 'flex';
-                searchElement.classList.add('has-text');
-            } else {
-                clearButton.style.display = 'none';
-                searchElement.classList.remove('has-text');
-            }
-        });
-
-        clearButton.addEventListener('click', () => {
-            searchInput.value = '';
-            clearButton.style.display = 'none';
-            searchElement.classList.remove('has-text');
-            searchInput.focus();
-        });
-
-        searchInput.addEventListener('focus', () => {
-            searchElement.classList.add('focused');
-        });
-
-        searchInput.addEventListener('blur', () => {
-            if (!searchInput.value.trim()) {
-                searchElement.classList.remove('focused');
-            }
-        });
-    }
-
-    // ===== МОДАЛЬНОЕ ОКНО СОЗДАНИЯ КНИГИ =====
-    const createBtn = document.getElementById('create-book-btn');
-    const modalCloseButtons = document.querySelectorAll('.modal-close');
-
-    // Обработчики для кнопки создания
-    if (createBtn) {
-        createBtn.addEventListener('click', () => {
-            openModal('create-book-modal');
-        });
-    }
-
-    // Обработчики для кнопок закрытия
-    modalCloseButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            const modal = this.closest('.modal-overlay');
-            closeModal(modal.id);
-        });
-    });
-
-    // Закрытие по клику вне окна
-    document.querySelectorAll('.modal-overlay').forEach(modal => {
-        modal.addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeModal(this.id);
-            }
-        });
-    });
-
-    // Закрытие по Esc
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') {
-            document.querySelectorAll('.modal-overlay').forEach(modal => {
-                if (modal.style.display === 'flex') {
-                    closeModal(modal.id);
-                }
-            });
-        }
-    });
-
-    // ===== ПРОСМОТР КНИГИ =====
-    document.querySelectorAll('.book-card').forEach(card => {
-        card.addEventListener('click', function() {
-            openModal('book-details-modal');
-        });
-    });
-
-    // ===== DRAG AND DROP ДЛЯ СОЗДАНИЯ КНИГИ =====
-    function initDragAndDrop(dropAreaId, previewId) {
-        const dropArea = document.getElementById(dropAreaId);
-        if (!dropArea) return;
-        
-        const fileInput = dropArea.querySelector('.file-input');
-        const previewImage = document.getElementById(previewId);
-        const previewContainer = dropArea.querySelector('.preview-container');
-        const uploadContent = dropArea.querySelector('.content');
-
-        // Обработчики событий
-        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-            dropArea.addEventListener(eventName, preventDefaults, false);
-        });
-
-        ['dragenter', 'dragover'].forEach(eventName => {
-            dropArea.addEventListener(eventName, () => highlight(dropArea), false);
-        });
-        
-        ['dragleave', 'drop'].forEach(eventName => {
-            dropArea.addEventListener(eventName, () => unhighlight(dropArea), false);
-        });
-
-        dropArea.addEventListener('drop', handleDrop, false);
-
-        function preventDefaults(e) {
-            e.preventDefault();
-            e.stopPropagation();
-        }
-
-        function highlight(element) {
-            element.classList.add('dragging');
-        }
-
-        function unhighlight(element) {
-            element.classList.remove('dragging');
-        }
-
-        function handleDrop(e) {
-            const dt = e.dataTransfer;
-            const files = dt.files;
-            
-            if (files.length) {
-                fileInput.files = files;
-                handleFiles(files);
-            }
-        }
-
-        fileInput.addEventListener('change', function() {
-            handleFiles(this.files);
-        });
-
-        function handleFiles(files) {
-            if (files.length > 0) {
-                const file = files[0];
-                
-                if (file.type.match('image.*')) {
-                    const reader = new FileReader();
-                    
-                    reader.onload = function(e) {
-                        if (previewImage) previewImage.src = e.target.result;
-                        if (previewContainer) previewContainer.style.display = 'flex';
-                        if (uploadContent) uploadContent.style.display = 'none';
-                        dropArea.classList.add('has-image');
-                    };
-                    
-                    reader.readAsDataURL(file);
-                } else {
-                    alert('Пожалуйста, выберите файл изображения!');
-                }
-            }
-        }
-    }
-
-    // Инициализация для окна создания
-    initDragAndDrop('drop-area', 'preview-image');
-    
-    // Инициализация для окна редактирования
-    initDragAndDrop('edit-drop-area', 'edit-preview-image');
-
-    // ===== ПРОСМОТР КНИГИ =====
-    document.querySelectorAll('.book-card').forEach(card => {
-        card.addEventListener('click', function() {
-            // Загрузка данных книги (заглушка)
-            const title = this.querySelector('h3')?.textContent || 'Название книги';
-            document.querySelector('#book-details-modal .book-title').textContent = title;
-            
-            // Открываем модальное окно
-            openModal('book-details-modal');
-        });
-    });
-
-    // Кнопки в окне просмотра
-    document.getElementById('send-to-catalog')?.addEventListener('click', function() {
-        alert('Книга отправлена на проверку и скоро появится в каталоге');
-    });
-
-    document.getElementById('edit-book')?.addEventListener('click', function() {
-        closeModal('book-details-modal');
-        openModal('edit-book-modal');
-    });
-
-    document.getElementById('delete-book')?.addEventListener('click', function() {
-        if (confirm('Вы уверены, что хотите удалить эту книгу?')) {
-            closeModal('book-details-modal');
-            alert('Книга успешно удалена');
-        }
-    });
-
-    // ===== РЕДАКТИРОВАНИЕ КНИГИ =====
-    // Кнопки в окне редактирования
-    document.getElementById('cancel-edit')?.addEventListener('click', function() {
-        closeModal('edit-book-modal');
-        openModal('book-details-modal');
-    });
-
-    document.getElementById('save-changes')?.addEventListener('click', function() {
-        closeModal('edit-book-modal');
-        alert('Изменения успешно сохранены');
-    });
-    </script>
+    <script src="scripts/common.js"></script>
+    <script src="scripts/catalog.js"></script>
 </body>
 </html>
