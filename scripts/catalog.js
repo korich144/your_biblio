@@ -1,3 +1,52 @@
+import { openModal, closeModal } from './common.js';
+
+// Инициализация при загрузке страницы
+export function initCatalog() {
+    if (document.querySelector('.books')) {
+        loadBooks();
+        initFilters();
+        initSearch();
+    }
+
+    // Используем делегирование событий для динамических элементов
+    document.addEventListener('click', function(e) {
+        // Обработка кнопки создания книги
+        if (e.target.closest('#create-book-btn')) {
+            openModal('create-book-modal');
+        }
+        
+        // Обработка кнопки редактирования
+        if (e.target.closest('#edit-book')) {
+            closeModal('book-details-modal');
+            openModal('edit-book-modal');
+        }
+        
+        // Обработка кнопки удаления
+        if (e.target.closest('#delete-book')) {
+            if (confirm('Вы уверены, что хотите удалить эту книгу?')) {
+                closeModal('book-details-modal');
+            }
+        }
+        
+        // Обработка отмены редактирования
+        if (e.target.closest('#cancel-edit')) {
+            closeModal('edit-book-modal');
+            openModal('book-details-modal');
+        }
+
+        if (e.target.closest('#save-changes')) {
+            closeModal('edit-book-modal');
+        }
+    });
+
+    // Инициализация Drag and Drop
+    initDragAndDrop('drop-area', 'preview-image');
+    initDragAndDrop('edit-drop-area', 'edit-preview-image');
+    setTimeout(() => {
+        initDragAndDrop('edit-drop-area', 'edit-preview-image');
+    }, 0);
+};
+
 // Динамическая загрузка книг
 async function loadBooks() {
     try {
@@ -48,8 +97,6 @@ function setupBookEvents() {
 
 // Открытие деталей книги
 function openBookDetails(bookId) {
-    // В реальном приложении здесь будет запрос к серверу
-    // Для демо используем статические данные
     openModal('book-details-modal');
 }
 
@@ -122,7 +169,7 @@ function initSearch() {
 // Drag and Drop для загрузки изображений
 function initDragAndDrop(dropAreaId, previewId) {
     const dropArea = document.getElementById(dropAreaId);
-    if (!dropArea) return;
+    if (!dropArea || dropArea.dataset.initialized) return;
     
     const fileInput = dropArea.querySelector('.file-input');
     const previewImage = document.getElementById(previewId);
@@ -190,38 +237,5 @@ function initDragAndDrop(dropAreaId, previewId) {
             }
         }
     }
+    dropArea.dataset.initialized = "true";
 }
-
-// Инициализация при загрузке страницы
-document.addEventListener('DOMContentLoaded', () => {
-    if (document.querySelector('.books')) {
-        loadBooks();
-        initFilters();
-        initSearch();
-    }
-    
-    // Инициализация модальных окон
-    document.getElementById('create-book-btn')?.addEventListener('click', () => {
-        openModal('create-book-modal');
-    });
-    
-    document.getElementById('edit-book')?.addEventListener('click', () => {
-        closeModal('book-details-modal');
-        openModal('edit-book-modal');
-    });
-    
-    document.getElementById('delete-book')?.addEventListener('click', () => {
-        if (confirm('Вы уверены, что хотите удалить эту книгу?')) {
-            closeModal('book-details-modal');
-        }
-    });
-    
-    document.getElementById('cancel-edit')?.addEventListener('click', () => {
-        closeModal('edit-book-modal');
-        openModal('book-details-modal');
-    });
-    
-    // Инициализация Drag and Drop
-    initDragAndDrop('drop-area', 'preview-image');
-    initDragAndDrop('edit-drop-area', 'edit-preview-image');
-});

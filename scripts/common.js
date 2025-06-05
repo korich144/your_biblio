@@ -1,79 +1,63 @@
-// Загрузка общих компонентов
-function loadComponents() {
-    // Загрузка header
-    fetch('partials/header.html')
-        .then(response => response.text())
-        .then(data => {
-            document.getElementById('header-container').innerHTML = data;
-            setActiveLink();
-        });
-    
-    // Загрузка footer
-    fetch('partials/footer.html')
-        .then(response => response.text())
-        .then(data => {
-            document.getElementById('footer-container').innerHTML = data;
-        });
+// Добавим глобальные функции
+window.loadHeader = async function() {
+    const header = await fetch('partials/header.html').then(r => r.text());
+    document.getElementById('header-container').innerHTML = header;
+    setActiveLink();
 }
 
-// Установка активной ссылки в навигации
-function setActiveLink() {
-    const currentPage = location.pathname.split('/').pop();
-    const links = document.querySelectorAll('nav a');
-    
-    links.forEach(link => {
-        const linkPage = link.getAttribute('href');
-        if (linkPage === currentPage) {
-            link.classList.add('active');
-        } else {
-            link.classList.remove('active');
-        }
+window.loadFooter = async function() {
+    const footer = await fetch('partials/footer.html').then(r => r.text());
+    document.getElementById('footer-container').innerHTML = footer;
+}
+
+window.setActiveLink = function() {
+    console.log("aaaaaaaaaaa");
+    const path = window.location.hash.slice(1) || '/';
+    document.querySelectorAll('nav a').forEach(link => {
+        link.classList.toggle('active', link.getAttribute('href') === `#${path}`);
     });
 }
 
-// Управление модальными окнами
-function setupModals() {
-    // Закрытие модальных окон
-    document.querySelectorAll('.modal-close').forEach(button => {
-        button.addEventListener('click', function() {
-            const modal = this.closest('.modal-overlay');
-            closeModal(modal.id);
-        });
-    });
+// Обновим обработчики навигации
+document.addEventListener('click', e => {
+    if (e.target.matches('nav a')) {
+        e.preventDefault();
+        window.location.hash = e.target.getAttribute('href');
+    }
+});
 
-    // Закрытие по клику вне окна
-    document.querySelectorAll('.modal-overlay').forEach(modal => {
-        modal.addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeModal(this.id);
+// Добавляем функции для работы с модальными окнами
+export function openModal(id) {
+    const modal = document.getElementById(id);
+    if (modal) {
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+}
+
+export function closeModal(id) {
+    const modal = document.getElementById(id);
+    if (modal) {
+        modal.style.display = 'none';
+        document.body.style.overflow = '';
+    }
+}
+
+// Обработчики для закрытия модальных окон
+document.addEventListener('click', e => {
+    if (e.target.classList.contains('modal-close') || 
+        e.target.classList.contains('modal-overlay')) {
+        const modal = e.target.closest('.modal-overlay');
+        if (modal) closeModal(modal.id);
+    }
+});
+
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+        document.querySelectorAll('.modal-overlay').forEach(modal => {
+            if (modal.style.display === 'flex') {
+                closeModal(modal.id);
             }
         });
-    });
-
-    // Закрытие по Esc
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') {
-            document.querySelectorAll('.modal-overlay').forEach(modal => {
-                if (modal.style.display === 'flex') {
-                    closeModal(modal.id);
-                }
-            });
-        }
-    });
-}
-
-function openModal(modalId) {
-    document.getElementById(modalId).style.display = 'flex';
-    document.body.style.overflow = 'hidden';
-}
-
-function closeModal(modalId) {
-    document.getElementById(modalId).style.display = 'none';
-    document.body.style.overflow = '';
-}
-
-// Инициализация при загрузке страницы
-document.addEventListener('DOMContentLoaded', () => {
-    loadComponents();
-    setupModals();
+    }
 });

@@ -1,0 +1,258 @@
+<div class="filter-panel">
+    <div class="filters">
+        <div class="filter" data-filter="author">
+            <i class="fas fa-user"></i>
+            <span>Автор</span>
+            <svg class="arrow" viewBox="0 0 30.727 30.727" width="12" height="12">
+                <path d="M29.994,10.183L15.363,24.812L0.733,10.184c-0.977-0.978-0.977-2.561,0-3.536c0.977-0.977,2.559-0.976,3.536,0l11.095,11.093L26.461,6.647c0.977-0.976,2.559-0.976,3.535,0C30.971,7.624,30.971,9.206,29.994,10.183z"/>
+            </svg>
+            <ul class="dropdown">
+                <li data-value="">Автор</li>
+                <li data-value="Есенин">Сергей Есенин</li>
+                <li data-value="Венчеровский">Алексей Венчеровский</li>
+                <li data-value="Пушкин">Александр Пушкин</li>
+            </ul>
+        </div>
+
+        <div class="filter" data-filter="genre">
+            <i class="fas fa-book"></i>
+            <span>Жанр</span>
+            <svg class="arrow" viewBox="0 0 30.727 30.727" width="12" height="12">
+                <path d="M29.994,10.183L15.363,24.812L0.733,10.184c-0.977-0.978-0.977-2.561,0-3.536c0.977-0.977,2.559-0.976,3.536,0l11.095,11.093L26.461,6.647c0.977-0.976,2.559-0.976,3.535,0C30.971,7.624,30.971,9.206,29.994,10.183z"/>
+            </svg>
+            <ul class="dropdown">
+                <li data-value="">Жанр</li>
+                <li data-value="поэзия">Поэзия</li>
+                <li data-value="проза">Проза</li>
+                <li data-value="драма">Драма</li>
+            </ul>
+        </div>
+
+        <div class="filter" data-filter="edition">
+            <i class="fas fa-calendar-alt"></i>
+            <span>Издание</span>
+            <svg class="arrow" viewBox="0 0 30.727 30.727" width="12" height="12">
+                <path d="M29.994,10.183L15.363,24.812L0.733,10.184c-0.977-0.978-0.977-2.561,0-3.536c0.977-0.977,2.559-0.976,3.536,0l11.095,11.093L26.461,6.647c0.977-0.976,2.559-0.976,3.535,0C30.971,7.624,30.971,9.206,29.994,10.183z"/>
+            </svg>
+            <ul class="dropdown">
+                <li data-value="">Издание</li>
+                <li data-value="1920">1920</li>
+                <li data-value="1955">1955</li>
+                <li data-value="2001">2001</li>
+            </ul>
+        </div>
+    </div>
+    
+    <div class="search">
+        <input type="text" placeholder="Поиск...">
+        <button class="clear"><i class="fas fa-times"></i></button>
+        <button class="search-btn"><i class="fas fa-search"></i></button>
+    </div>
+    
+    <div class="actions">
+        <button class="add"><i class="fas fa-plus"></i> Добавить</button>
+        <button class="create" id="create-book-btn"><i class="fas fa-file"></i> Создать</button>
+    </div>
+</div>
+
+<main>
+    <section class="books"></section>
+
+    <div class="pagination">
+        <button class="prev"><<</button>
+        <button class="prev"><</button>
+        <span class="page active">1</span>
+        <span class="page">2</span>
+        <span class="page">3</span>
+        <span class="dots">...</span>
+        <span class="page">7</span>
+        <span class="page">8</span>
+        <span class="page">9</span>
+        <button class="next">></button>
+        <button class="next">>></button>
+    </div>
+</main>
+
+<div id="footer-container"></div>
+
+<div class="modal-overlay" id="create-book-modal">
+    <div class="modal">
+        <div class="modal-header">
+            <button class="modal-close">&times;</button>
+            <h2>Создание книги</h2>
+        </div>
+        <div class="modal-content">
+            <div class="image-upload-container">
+                <div class="image-upload" id="drop-area">
+                    <div class="content">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <span>Перетащите обложку сюда<br>или нажмите для выбора<br>(формат 4:3)</span>
+                        <input type="file" class="file-input" id="file-input" accept="image/*" style="display: none;">
+                    </div>
+                    <div class="preview-container" style="display: none;">
+                        <img id="preview-image" alt="Предпросмотр обложки">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-fields scrollable-fields">
+                <div class="form-group">
+                    <label>Название книги</label>
+                    <input type="text" placeholder="Введите название">
+                </div>
+                <div class="form-group">
+                    <label>Автор</label>
+                    <select>
+                        <option>Выберите автора</option>
+                        <option>Сергей Есенин</option>
+                        <option>Александр Пушкин</option>
+                        <option>Лев Толстой</option>
+                        <option>Фёдор Достоевский</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Издательство</label>
+                    <input type="text" placeholder="Название издательства">
+                </div>
+                <div class="form-group">
+                    <label>Год издания</label>
+                    <input type="number" placeholder="Год выпуска">
+                </div>
+                <div class="form-group">
+                    <label>Количество страниц</label>
+                    <input type="number" placeholder="Введите число">
+                </div>
+                <div class="form-group">
+                    <label>Жанр</label>
+                    <select>
+                        <option>Выберите жанр</option>
+                        <option>Поэзия</option>
+                        <option>Проза</option>
+                        <option>Драма</option>
+                        <option>Фантастика</option>
+                        <option>Детектив</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Описание</label>
+                    <textarea placeholder="Введите описание книги" rows="4"></textarea>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="create-btn">Создать</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="book-details-modal">
+    <div class="modal">
+        <div class="modal-header">
+            <button class="modal-close">&times;</button>
+            <h2>Просмотр книги</h2>
+        </div>
+        <div class="modal-content">
+            <div class="image-upload-container">
+                <div class="image-upload">
+                    <div class="preview-container">
+                        <img src="src/book.jpg" alt="Обложка книги">
+                    </div>
+                </div>
+            </div>
+            <div class="form-fields">
+                <div class="book-title">Название книги</div>
+                <div class="book-author">Автор книги</div>
+                
+                <div class="book-details">
+                    <div class="detail-item">
+                        <span class="detail-label">Издательство:</span>
+                        <span class="detail-value">Издательство</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Год издания:</span>
+                        <span class="detail-value">2023</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Количество страниц:</span>
+                        <span class="detail-value">350</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">Жанр:</span>
+                        <span class="detail-value">Фантастика</span>
+                    </div>
+                </div>
+                
+                <div class="book-description">
+                    <div class="description-label">Описание</div>
+                    <p>Есть над чем задуматься: акционеры крупнейших компаний заблокированы в рамках своих собственных рациональных ограничений.</p>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="create-btn" id="send-to-catalog">Отправить в каталог</button>
+            <button class="create-btn" id="edit-book">Изменить</button>
+            <button class="create-btn" id="delete-book" style="background-color: #ff4d4d;">Удалить</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="edit-book-modal">
+    <div class="modal">
+        <div class="modal-header">
+            <button class="modal-close">&times;</button>
+            <h2>Изменение книги</h2>
+        </div>
+        <div class="modal-content">
+            <div class="image-upload-container">
+                <div class="image-upload" id="edit-drop-area">
+                    <div class="content">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <span>Перетащите новую обложку сюда<br>или нажмите для выбора<br>(формат 4:3)</span>
+                        <input type="file" class="file-input" id="edit-file-input" accept="image/*" style="display: none;">
+                    </div>
+                    <div class="preview-container" style="display: none;">
+                        <img id="edit-preview-image" alt="Предпросмотр обложки">
+                    </div>
+                </div>
+            </div>
+            <div class="form-fields scrollable-fields">
+                <div class="form-group">
+                    <label>Название книги</label>
+                    <input type="text" placeholder="Введите название" value="Название книги" class="book-title-input">
+                </div>
+                <div class="form-group">
+                    <label>Автор</label>
+                    <input type="text" placeholder="Автор" value="Автор книги" class="book-author-input">
+                </div>
+                <div class="form-group">
+                    <label>Издательство</label>
+                    <input type="text" placeholder="Название издательства" value="Издательство">
+                </div>
+                <div class="form-group">
+                    <label>Год издания</label>
+                    <input type="number" placeholder="Год выпуска" value="2023">
+                </div>
+                <div class="form-group">
+                    <label>Количество страниц</label>
+                    <input type="number" placeholder="Введите число" value="350">
+                </div>
+                <div class="form-group">
+                    <label>Жанр</label>
+                    <select>
+                        <option>Выберите жанр</option>
+                        <option selected>Фантастика</option>
+                        <option>Детектив</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Описание</label>
+                    <textarea placeholder="Введите описание книги" rows="4">Текущее описание книги</textarea>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="create-btn" id="cancel-edit">Отмена</button>
+            <button class="create-btn" id="save-changes">Сохранить</button>
+        </div>
+    </div>
+</div>
