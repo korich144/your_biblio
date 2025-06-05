@@ -11,7 +11,6 @@ window.loadFooter = async function() {
 }
 
 window.setActiveLink = function() {
-    console.log("aaaaaaaaaaa");
     const path = window.location.hash.slice(1) || '/';
     document.querySelectorAll('nav a').forEach(link => {
         link.classList.toggle('active', link.getAttribute('href') === `#${path}`);
