@@ -114,11 +114,12 @@ function fillBookDetailsModal(book) {
     const deleteBtn = modal.querySelector('#delete-book');
     const sendToCatalogBtn = modal.querySelector('#send-to-catalog');
     const addToLibraryBtn = modal.querySelector('#add-to-library');
+    const isLoggedIn = !!JSON.parse(localStorage.getItem('user'));
     
     if (editBtn) editBtn.style.display = isCatalogPage ? 'none' : 'inline-block';
     if (deleteBtn) deleteBtn.style.display = isCatalogPage ? 'none' : 'inline-block';
     if (sendToCatalogBtn) sendToCatalogBtn.style.display = isCatalogPage ? 'none' : 'inline-block';
-    if (addToLibraryBtn) addToLibraryBtn.style.display = isCatalogPage ? 'inline-block' : 'none';
+    if (addToLibraryBtn) addToLibraryBtn.style.display = isCatalogPage && isLoggedIn ? 'inline-block' : 'none';
 }
 
 // Заполнение модального окна редактирования
