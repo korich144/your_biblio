@@ -6,12 +6,26 @@
     <div class="nav-container">
         <nav>
             <a href="#/">Главная</a>
-            <a href="#/my-library">Моя библиотека</a>
+            <a href="#/my-library" id="my-library-link" style="display: none;">Моя библиотека</a>
             <a href="#/catalog">Каталог</a>
         </nav>
         <div class="user-panel">
-            <button class="register">Регистрация</button>
-            <button class="login">Вход</button>
+            <button class="register" id="register-btn">Регистрация</button>
+            <button class="login" id="login-btn">Вход</button>
+            <div id="user-profile" style="display: none;">
+                <span id="username-display"></span>
+                <img id="user-avatar" src="src/default_avatar.png" alt="Аватар" width="40" height="40">
+                <div id="user-menu">
+                    <button id="profile-btn">
+                        <i class="fas fa-user"></i>
+                        <span>Профиль</span>
+                    </button>
+                    <button id="logout-btn">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Выход</span>
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 </header>

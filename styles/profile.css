@@ -1,0 +1,179 @@
+.profile-container {
+    padding: 20px;
+    min-width: 526px;
+    margin: 0 auto;
+}
+
+.main-info {
+    display: flex;
+    gap: 30px;
+    margin-bottom: 30px;
+}
+
+.avatar-section {
+    flex: 0 0 200px;
+}
+
+.avatar-upload {
+    position: relative;
+    border: 2px dashed #A98746;
+    border-radius: 8px;
+    padding: 10px;
+    text-align: center;
+}
+
+.avatar-upload .preview-container {
+    width: 180px;
+    height: 180px;
+    margin: 0 auto;
+}
+
+.avatar-upload img {
+    width: 100%;
+    height: 100%;
+    border: 5px #A98746 solid;
+    border-radius: 100%;
+}
+
+#change-avatar-btn {
+    margin-top: 10px;
+    background: #A98746;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.info-section {
+    flex: 1;
+}
+
+.additional-info {
+    margin-bottom: 30px;
+}
+
+.actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.actions button {
+    padding: 10px 20px;
+    background: #A98746;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.visibility {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-top: 5px;
+}
+
+.profile-header {
+    color: #805300;
+    font-size: 32px;
+    text-align: center;
+    margin-bottom: 30px;
+    position: relative;
+}
+
+.profile-header:after {
+    content: "";
+    display: block;
+    width: 80px;
+    height: 3px;
+    background: #A98746;
+    margin: 10px auto 0;
+}
+
+.additional-header {
+    color: #805300;
+    font-size: 24px;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #A98746;
+}
+
+.editable-field {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    padding: 5px 0;
+}
+
+.editable-field span {
+    flex: 1;
+    transition: color 0.2s;
+}
+
+.editable-field:hover span {
+    color: #A98746;
+}
+
+.edit-icon, .save-icon, .cancel-icon {
+    color: #A98746;
+    cursor: pointer;
+    transition: transform 0.2s, color 0.2s;
+}
+
+.edit-icon:hover, .save-icon:hover, .cancel-icon:hover {
+    transform: scale(1.1);
+    color: #805300;
+}
+
+.edit-controls {
+    display: flex;
+    gap: 10px;
+}
+
+.visibility {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+    cursor: pointer;
+    color: #524230;
+    transition: color 0.2s;
+}
+
+.visibility:hover {
+    color: #805300;
+}
+
+.visibility-icon {
+    transition: transform 0.2s;
+}
+
+.visibility:hover .visibility-icon {
+    transform: scale(1.1);
+}
+
+.editable-field {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 20px;
+    color: #524230;
+}
+
+.edit-icon, .cancel-icon, .save-icon {
+    margin-left: auto;
+}
+
+.visibility {
+    margin-left: 5px;
+    cursor: pointer;
+}
+
+.edit-controls {
+    display: flex;
+    gap: 10px;
+    margin-left: auto;
+}

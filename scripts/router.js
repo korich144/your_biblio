@@ -1,7 +1,8 @@
 const routes = {
     '/': 'home',
     '/my-library': 'my-library',
-    '/catalog': 'catalog'
+    '/catalog': 'catalog',
+    '/profile': 'profile'
 };
 
 async function loadPage(page) {
@@ -21,6 +22,10 @@ async function loadPage(page) {
         case 'catalog':
             mainContainer.innerHTML = await fetch('partials/catalog.html').then(r => r.text());
             await import('./catalog.js').then(module => module.initCatalog());
+            break;
+        case 'profile':
+            mainContainer.innerHTML = await fetch('partials/profile.html').then(r => r.text());
+            await import('./common.js').then(module => module.initProfile());
             break;
     }
 }

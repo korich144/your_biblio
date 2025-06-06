@@ -275,9 +275,9 @@
 .modal {
     background: #F4EDE1;
     border-radius: 16px;
-    width: 90%;
+    width: 60%;
     max-width: 900px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    /*! box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3); */
     position: relative;
     overflow: hidden;
     animation: modalFade 0.3s ease;
@@ -372,8 +372,6 @@
 .image-upload {
     border: 3px #A98746 dashed;
     border-radius: 25px;
-    height: 0;
-    padding-top: 133.33%; /* Соотношение 4:3 (3/4=0.75) */
     position: relative;
     background: #F0E5D1;
     transition: all 0.3s;
@@ -407,11 +405,6 @@
 }
 
 .preview-container {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -422,7 +415,11 @@
     max-width: 100%;
     max-height: 100%;
     object-fit: contain;
-    border-radius: 8px;
+    border-radius: 15px;
+}
+
+.image-placeholder {
+    padding-top: 133%;
 }
 
 @media (max-width: 900px) {
@@ -454,7 +451,7 @@
 .form-group label {
     display: block;
     margin-bottom: 8px;
-    color: #524230;
+    color: #805300;
     font-weight: 500;
     font-size: 16px;
 }
@@ -601,4 +598,11 @@
 .book-author-input {
     font-size: 18px !important;
     color: #524230 !important;
+}
+
+#login-modal .modal,
+#register-modal .modal {
+    width: 25%;
+    min-width: 300px;
+    max-width: 400px;
 }

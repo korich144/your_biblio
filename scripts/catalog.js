@@ -139,6 +139,7 @@ function fillEditBookModal(book) {
     if (book.image) {
         modal.querySelector('.preview-container').style.display = 'flex';
         modal.querySelector('.content').style.display = 'none';
+        modal.querySelector('.image-placeholder').style.display = 'none';
     }
 }
 
@@ -320,6 +321,7 @@ function initDragAndDrop(dropAreaId, previewId) {
     const previewImage = document.getElementById(previewId);
     const previewContainer = dropArea.querySelector('.preview-container');
     const uploadContent = dropArea.querySelector('.content');
+    const imagePlaceholder = dropArea.querySelector('.image-placeholder');
 
     ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
         dropArea.addEventListener(eventName, preventDefaults, false);
@@ -373,6 +375,7 @@ function initDragAndDrop(dropAreaId, previewId) {
                     if (previewImage) previewImage.src = e.target.result;
                     if (previewContainer) previewContainer.style.display = 'flex';
                     if (uploadContent) uploadContent.style.display = 'none';
+                    if (imagePlaceholder) imagePlaceholder.style.display = 'none';
                     dropArea.classList.add('has-image');
                 };
                 
