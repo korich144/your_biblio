@@ -48,6 +48,11 @@ window.initAuth = function() {
             menu.style.display = 'none';
         }
     });
+    document.addEventListener('click', function(e) {
+        if (e.target.closest('.home-register-btn')) {
+            openModal('register-modal');
+        }
+    });
 }
 
 // Обновим обработчики навигации
