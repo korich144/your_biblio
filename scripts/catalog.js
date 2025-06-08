@@ -207,11 +207,12 @@ function renderPagination(total, perPage, current) {
 
 // Настройка обработчиков событий для книг
 function setupBookEvents() {
-    document.querySelectorAll('.book-card').forEach(card => {
-        card.addEventListener('click', function() {
-            const bookId = this.dataset.id;
+    document.querySelector('.books')?.addEventListener('click', function(e) {
+        const card = e.target.closest('.book-card');
+        if (card) {
+            const bookId = card.dataset.id;
             openBookDetails(bookId);
-        });
+        }
     });
 }
 
@@ -363,13 +364,28 @@ async function initFilters() {
         });
 
         document.querySelectorAll('.filter').forEach(filter => {
-            filter.addEventListener('click', function(e) {
-                if (e.target.tagName === 'LI' && e.target.dataset.value) {
-                    this.querySelector('span').textContent = e.target.textContent;
+            const dropdown = filter.querySelector('.dropdown');
+            filter.addEventListener('click', function() {
+                dropdown.style.display = 
+                    dropdown.style.display === 'block' ? 'none' : 'block';
+            });
+            
+            dropdown.querySelectorAll('li').forEach(li => {
+                li.addEventListener('click', function() {
+                    filter.querySelector('span').textContent = this.textContent;
                     currentPage = 1;
                     loadBooks();
-                }
+                    dropdown.style.display = 'none';
+                });
             });
+        });
+
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.filter')) {
+                document.querySelectorAll('.dropdown').forEach(dd => {
+                    dd.style.display = 'none';
+                });
+            }
         });
         
     } catch (error) {
@@ -412,12 +428,12 @@ function initSearch() {
         }
     });
 
-    document.querySelector('.search-btn').addEventListener('click', () => {
+    document.querySelector('.search-btn')?.addEventListener('click', () => {
         currentPage = 1;
         loadBooks();
     });
     
-    document.querySelector('.search input').addEventListener('keypress', (e) => {
+    document.querySelector('.search input')?.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {
             currentPage = 1;
             loadBooks();

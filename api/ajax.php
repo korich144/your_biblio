@@ -5,16 +5,11 @@ $db = getDB();
 $input = json_decode(file_get_contents('php://input'), true);
 $action = $_GET['action'] ?? '';
 
-// Обработка загрузки файлов
-if (isset($_FILES['avatar']) || isset($_FILES['cover'])) {
+if ($action === 'upload_avatar' || $action === 'upload_cover') {
     try {
-        if (isset($_FILES['avatar'])) {
-            $filename = handleUpload('avatar');
-            echo json_encode(['avatar' => 'uploads/avatars/' . $filename]);
-        } else {
-            $filename = handleUpload('cover');
-            echo json_encode(['cover' => 'uploads/covers/' . $filename]);
-        }
+        $type = str_replace('upload_', '', $action);
+        $filename = handleUpload($type);
+        echo json_encode([$type => 'uploads/' . $type . 's/' . $filename]);
         exit;
     } catch (Exception $e) {
         http_response_code(400);
@@ -97,12 +92,14 @@ function handleUpload($type) {
         mkdir($uploadDir, 0777, true);
     }
     
-    $file = $_FILES['file'];
+    $file = $_FILES[$type];
+    
     $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
     $filename = uniqid() . '.' . $ext;
     $target = $uploadDir . $filename;
     
     if (move_uploaded_file($file['tmp_name'], $target)) {
+        // Возвращаем только имя файла
         return $filename;
     }
     throw new Exception('File upload failed');
@@ -253,36 +250,36 @@ function handleAddBook($db, $data) {
         }
     }
     
-    $fields = [
-        'title', 'author', 'publisher', 'year', 'pages', 
-        'genre', 'description', 'image', 'is_public'
-    ];
-    
+    // Формируем поля и значения
+    $fields = ['title', 'author', 'publisher', 'year', 'pages', 'genre', 'description', 'image', 'is_public', 'created_by'];
     $values = [];
-    $params = [];
     
     foreach ($fields as $field) {
-        if (isset($data[$field])) {
-            $values[] = $data[$field];
-            $params[] = '$' . count($values);
+        if ($field === 'created_by') {
+            $values[] = $user_id;
         } else {
-            $values[] = null;
-            $params[] = 'NULL';
+            $values[] = $data[$field] ?? null;
         }
     }
     
-    $params[] = '$' . (count($values) + 1);
-    $values[] = $user_id;
+    // Формируем плейсхолдеры
+    $placeholders = array_map(function($i) {
+        return '$' . ($i + 1);
+    }, array_keys($values));
     
-    $query = "INSERT INTO books (" . implode(',', $fields) . ", created_by) 
-              VALUES (" . implode(',', $params) . ") 
+    $query = "INSERT INTO books (" . implode(',', $fields) . ") 
+              VALUES (" . implode(',', $placeholders) . ") 
               RETURNING *";
               
     $result = pg_query_params($db, $query, $values);
+    if (!$result) {
+        throw new Exception(pg_last_error($db)); // Добавлено для отладки
+    }
+    
     $book = pg_fetch_assoc($result);
     
     if (!$book) {
-        throw new Exception('Failed to add book');
+        throw new Exception('Failed to add book: ' . pg_last_error($db));
     }
     
     echo json_encode($book);
@@ -398,9 +395,7 @@ function handleGetProfile($db) {
     if (!$user_id) throw new Exception('Not authorized');
     
     $result = pg_query_params($db, 
-        "SELECT id, username, name, email, avatar, 
-                EXTRACT(YEAR FROM AGE(birthdate))::int AS age, 
-                gender 
+        "SELECT id, username, name, email, avatar, birthdate, gender 
          FROM users WHERE id = $1",
         [$user_id]
     );
@@ -410,6 +405,16 @@ function handleGetProfile($db) {
     if (!$profile) {
         throw new Exception('Profile not found');
     }
+
+    // Рассчитываем возраст
+    if ($profile['birthdate']) {
+        $birthdate = new DateTime($profile['birthdate']);
+        $today = new DateTime();
+        $age = $today->diff($birthdate)->y;
+        $profile['age'] = $age;
+    } else {
+        $profile['age'] = null;
+    }
     
     echo json_encode($profile);
 }
@@ -418,14 +423,32 @@ function handleUpdateProfile($db, $data) {
     $user_id = $_SESSION['user_id'] ?? 0;
     if (!$user_id) throw new Exception('Not authorized');
     
-    $fields = ['name', 'email', 'avatar', 'birthdate', 'gender'];
+    // Поддерживаемые поля с преобразованием
+    $fieldMap = [
+        'name' => 'name',
+        'username' => 'username',
+        'email' => 'email',
+        'avatar' => 'avatar',
+        'birthdate' => 'birthdate',
+        'gender' => 'gender'
+    ];
+    
     $updates = [];
     $params = [];
     
-    foreach ($fields as $field) {
+    foreach ($fieldMap as $field => $dbField) {
         if (isset($data[$field])) {
-            $updates[] = "$field = $" . (count($params) + 1);
-            $params[] = $data[$field];
+            // Преобразование даты
+            if ($field === 'birthdate' && is_numeric($data[$field])) {
+                $birthYear = (int)$data[$field];
+                $currentYear = date('Y');
+                $birthdate = ($currentYear - $birthYear) . '-01-01'; // Примерная дата
+                $updates[] = "$dbField = $" . (count($params) + 1);
+                $params[] = $birthdate;
+            } else {
+                $updates[] = "$dbField = $" . (count($params) + 1);
+                $params[] = $data[$field];
+            }
         }
     }
     

@@ -8,6 +8,8 @@ CREATE TABLE users (
     email VARCHAR(100) UNIQUE NOT NULL,
     name VARCHAR(100),
     avatar VARCHAR(255),
+    birthdate DATE, -- Добавлено поле даты рождения
+    gender VARCHAR(10), -- Добавлено поле пола
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 

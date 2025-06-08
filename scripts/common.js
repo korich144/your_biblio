@@ -105,7 +105,7 @@ export const api = {
     async uploadFile(file, type) {
         checkAuth();
         const formData = new FormData();
-        formData.append('file', file);
+        formData.append(type, file); // Исправлено: используем type вместо 'file'
         
         const response = await fetch(`api/ajax.php?action=upload_${type}`, {
             method: 'POST',
@@ -157,6 +157,11 @@ window.initAuth = function() {
     document.addEventListener('click', function(e) {
         if (e.target.closest('.home-register-btn')) {
             openModal('register-modal');
+        }
+    });
+    document.getElementById('user-profile')?.addEventListener('click', function(e) {
+        if (e.target.closest('#profile-btn') || e.target.closest('#user-avatar')) {
+            window.location.hash = '#/profile';
         }
     });
 }
@@ -253,9 +258,9 @@ export function updateUI(user) {
     
     if (isLoggedIn && usernameDisplay) {
         usernameDisplay.textContent = user.name;
-        document.getElementById('user-avatar').src = user.avatar;
-        document.getElementById('profile-username-display').textContent = user.name || ''; // Новые строки
-        document.getElementById('profile-nickname-display').textContent = user.username || ''; // Новые строки
+        const avatar = user.avatar || 'src/default_avatar.png';
+        document.getElementById('user-avatar').src = avatar;
+        document.getElementById('username-display').textContent = user.name || ''; 
     }
 }
 
@@ -332,30 +337,79 @@ export async function initProfile() {
         });
 
         document.querySelectorAll('.save-icon').forEach(icon => {
-            icon.addEventListener('click', function() {
+            icon.addEventListener('click', async function() {
                 const field = this.closest('.editable-field');
                 const display = field.querySelector('span');
                 const input = field.nextElementSibling;
                 const editIcon = field.querySelector('.edit-icon');
                 const controls = field.querySelector('.edit-controls');
-                const fieldName = input.id.replace('profile-', '').replace('-input', '');
+                const fieldId = input.id;
                 
-                const newValue = input.value;
-                display.textContent = newValue;
+                let apiFieldName;
+                let value = input.value;
                 
-                // Обновляем данные пользователя
-                user[fieldName] = newValue;
-                localStorage.setItem('user', JSON.stringify(user));
+                // Сопоставление ID полей с именами в API
+                switch(fieldId) {
+                    case 'profile-username-input':
+                        apiFieldName = 'name';
+                        break;
+                    case 'profile-nickname-input':
+                        apiFieldName = 'username';
+                        break;
+                    case 'profile-email-input':
+                        apiFieldName = 'email';
+                        break;
+                    case 'profile-age-input':
+                        apiFieldName = 'birthdate';
+                        // Преобразуем возраст в дату рождения
+                        const birthYear = new Date().getFullYear() - parseInt(value);
+                        value = `${birthYear}-01-01`; // Примерная дата
+                        break;
+                    case 'profile-gender-input':
+                        apiFieldName = 'gender';
+                        value = value == 'male' ? 'male' : value == 'female' ? 'female' : '';
+                        break;
+                    default:
+                        apiFieldName = fieldId.replace('profile-', '').replace('-input', '');
+                }
                 
-                // Возвращаем отображение
-                input.style.display = 'none';
-                display.style.display = 'inline';
-                editIcon.style.display = 'block';
-                controls.style.display = 'none';
-                
-                // Обновляем имя в хедере
-                if (fieldName === 'username') {
-                    document.getElementById('username-display').textContent = newValue;
+                try {
+                    // Отправляем обновление на сервер
+                    await api.updateProfile({ [apiFieldName]: value });
+                    
+                    // Обновляем локальные данные
+                    const user = JSON.parse(localStorage.getItem('user'));
+                    user[apiFieldName] = value;
+                    localStorage.setItem('user', JSON.stringify(user));
+                    
+                    // Обновляем отображение
+                    if (apiFieldName === 'name') {
+                        display.textContent = value;
+                        document.getElementById('username-display').textContent = value;
+                    } else if (apiFieldName === 'username') {
+                        display.textContent = value;
+                    } else if (apiFieldName === 'gender') {
+                        if (input.tagName === 'SELECT') {
+                            const selectedOption = input.options[input.selectedIndex];
+                            value = selectedOption.value;
+                        }
+                        const genderDisplayMap = {
+                            'male': 'Мужской',
+                            'female': 'Женский',
+                            '': 'Не указан'
+                        };
+                        display.textContent = genderDisplayMap[value] || 'Не указан';
+                    } else {
+                        display.textContent = value;
+                    }
+                    
+                    // Скрываем элементы ввода
+                    input.style.display = 'none';
+                    display.style.display = 'inline';
+                    editIcon.style.display = 'block';
+                    controls.style.display = 'none';
+                } catch (error) {
+                    alert('Ошибка сохранения: ' + error.message);
                 }
             });
         });
@@ -391,10 +445,19 @@ export async function initProfile() {
             if (e.target.files[0]) {
                 try {
                     const result = await api.uploadFile(e.target.files[0], 'avatar');
-                    user.avatar = result.avatar;
+                    const avatarUrl = result.avatar;
+                    
+                    // Сохраняем URL в профиле
+                    await api.updateProfile({ avatar: avatarUrl });
+                    
+                    // Обновляем локальные данные
+                    const user = JSON.parse(localStorage.getItem('user'));
+                    user.avatar = avatarUrl;
                     localStorage.setItem('user', JSON.stringify(user));
-                    document.getElementById('profile-avatar-preview').src = user.avatar;
-                    document.getElementById('user-avatar').src = user.avatar;
+                    
+                    // Обновляем изображения
+                    document.getElementById('profile-avatar-preview').src = avatarUrl;
+                    document.getElementById('user-avatar').src = avatarUrl;
                 } catch (error) {
                     alert('Ошибка загрузки аватара: ' + error.message);
                 }
