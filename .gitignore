@@ -1,2 +1,5 @@
 archive.bat
 your_biblio.txt
+/uploads/
+.env
+*.log

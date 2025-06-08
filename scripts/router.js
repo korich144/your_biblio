@@ -7,26 +7,37 @@ const routes = {
 
 async function loadPage(page) {
     const mainContainer = document.getElementById('main-container');
-    if (!mainContainer) return;
-    
     mainContainer.innerHTML = '';
-    
-    switch(page) {
-        case 'home':
-            mainContainer.innerHTML = await fetch('partials/home.html').then(r => r.text());
-            break;
-        case 'my-library':
-            mainContainer.innerHTML = await fetch('partials/my_biblio.html').then(r => r.text());
-            await import('./catalog.js').then(module => module.initCatalog());
-            break;
-        case 'catalog':
-            mainContainer.innerHTML = await fetch('partials/catalog.html').then(r => r.text());
-            await import('./catalog.js').then(module => module.initCatalog());
-            break;
-        case 'profile':
-            mainContainer.innerHTML = await fetch('partials/profile.html').then(r => r.text());
-            await import('./common.js').then(module => module.initProfile());
-            break;
+
+    try {
+        switch(page) {
+            case 'home':
+                mainContainer.innerHTML = await fetch('partials/home.html').then(r => r.text());
+                break;
+            case 'my-library':
+            case 'catalog':
+                mainContainer.innerHTML = await fetch(page === 'catalog' ? 
+                    'partials/catalog.html' : 'partials/my_biblio.html').then(r => r.text());
+                
+                // Инициализация только после загрузки HTML
+                setTimeout(async () => {
+                    const { initCatalog } = await import('./catalog.js');
+                    initCatalog();
+                }, 100);
+                break;
+            case 'profile':
+                mainContainer.innerHTML = await fetch('partials/profile.html').then(r => r.text());
+                
+                // Инициализация профиля
+                setTimeout(async () => {
+                    const { initProfile } = await import('./common.js');
+                    initProfile();
+                }, 100);
+                break;
+        }
+    } catch (error) {
+        console.error('Ошибка загрузки страницы:', error);
+        mainContainer.innerHTML = '<div class="error">Ошибка загрузки страницы</div>';
     }
 }
 

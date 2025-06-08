@@ -1,4 +1,4 @@
-import { openModal, closeModal } from './common.js';
+import { openModal, closeModal, api } from './common.js';
 
 // Инициализация при загрузке страницы
 export function initCatalog() {
@@ -25,6 +25,7 @@ export function initCatalog() {
         // Обработка кнопки удаления
         if (e.target.closest('#delete-book') && !isCatalogPage) {
             if (confirm('Вы уверены, что хотите удалить эту книгу?')) {
+                deleteBook(currentBookId);
                 closeModal('book-details-modal');
             }
         }
@@ -39,8 +40,14 @@ export function initCatalog() {
             saveBookChanges();
         }
 
+        if (e.target.closest('#create-book-submit') && !isCatalogPage) {
+            createNewBook();
+            openModal('create-book-modal');
+        }
+
         if (e.target.closest('#add-to-library') && isCatalogPage) {
-            addToLibrary(currentBookId);
+            //addToLibrary(currentBookId);
+            addToLibraryHandler();
             closeModal('book-details-modal');
         }
     });
@@ -59,23 +66,17 @@ let currentBookId = null; // ID текущей книги
 // Динамическая загрузка книг
 async function loadBooks() {
     try {
-        const isCatalogPage = window.location.hash.includes('/catalog');
-        const isMyLibraryPage = window.location.hash.includes('/my-library');
+        const isLibraryPage = window.location.hash.includes('/my-library');
+        const filters = getCurrentFilters();
+        const page = currentPage;
         
-        if (isCatalogPage) {
-            // Загрузка книг для каталога
-            const response = await fetch('data/catalog.json');
-            booksData = await response.json();
-        } 
-        else if (isMyLibraryPage) {
-            // Загрузка книг для библиотеки
-            booksData = JSON.parse(localStorage.getItem('myLibrary')) || [];
-        }
-        
+        const response = await api.getBooks(filters, page, isLibraryPage);
+        booksData = response.books;
         renderBooks(booksData);
-        setupBookEvents();
+        renderPagination(response.total, response.perPage, response.page);
     } catch (error) {
         console.error('Ошибка загрузки книг:', error);
+        alert(error.message);
     }
 }
 
@@ -170,6 +171,40 @@ function renderBooks(books) {
     });
 }
 
+let currentPage = 1;
+
+function renderPagination(total, perPage, current) {
+    const pagination = document.querySelector('.pagination');
+    if (!pagination) return;
+    
+    pagination.innerHTML = '';
+    
+    const totalPages = Math.ceil(total / perPage);
+    
+    const createButton = (text, page, disabled = false) => {
+        const button = document.createElement('button');
+        button.textContent = text;
+        button.disabled = disabled;
+        button.addEventListener('click', () => {
+            currentPage = page;
+            loadBooks();
+        });
+        return button;
+    };
+
+    pagination.appendChild(createButton('<<', 1, current === 1));
+    pagination.appendChild(createButton('<', current - 1, current === 1));
+    
+    for (let i = 1; i <= totalPages; i++) {
+        const button = createButton(i, i);
+        if (i === current) button.classList.add('active');
+        pagination.appendChild(button);
+    }
+    
+    pagination.appendChild(createButton('>', current + 1, current === totalPages));
+    pagination.appendChild(createButton('>>', totalPages, current === totalPages));
+}
+
 // Настройка обработчиков событий для книг
 function setupBookEvents() {
     document.querySelectorAll('.book-card').forEach(card => {
@@ -233,6 +268,46 @@ function saveBookChanges() {
     openBookDetails(currentBookId);
 }
 
+async function addToLibraryHandler() {
+    try {
+        await api.addToLibrary(currentBookId);
+        alert('Книга добавлена в библиотеку!');
+    } catch (error) {
+        console.error('Ошибка:', error);
+        alert(error.message);
+    }
+}
+
+async function createNewBook() {
+    const bookData = {
+        title: document.querySelector('#create-book-modal input[placeholder="Введите название"]').value,
+        author: document.querySelector('#create-book-modal select').value,
+        // Собираем остальные данные
+    };
+    
+    try {
+        const newBook = await api.addBook(bookData);
+        booksData.push(newBook);
+        renderBooks(booksData);
+        closeModal('create-book-modal');
+        alert('Книга успешно создана!');
+    } catch (error) {
+        alert(error.message);
+    }
+}
+
+async function deleteBook(bookId) {
+    try {
+        await api.deleteBook(bookId);
+        booksData = booksData.filter(book => book.id !== bookId);
+        renderBooks(booksData);
+        closeModal('book-details-modal');
+        alert('Книга успешно удалена');
+    } catch (error) {
+        alert(error.message);
+    }
+}
+
 function addToLibrary(bookId) {
     const book = booksData.find(b => b.id == bookId);
     if (!book) return;
@@ -247,34 +322,59 @@ function addToLibrary(bookId) {
     }
 }
 
+function getCurrentFilters() {
+    const author = document.querySelector('.filter[data-filter="author"] span').textContent;
+    const genre = document.querySelector('.filter[data-filter="genre"] span').textContent;
+    const year = document.querySelector('.filter[data-filter="edition"] span').textContent;
+    const search = document.querySelector('.search input').value;
+    
+    return {
+        author: author === 'Автор' ? '' : author,
+        genre: genre === 'Жанр' ? '' : genre,
+        year: year === 'Издание' ? '' : year,
+        search: search
+    };
+}
+
 // Инициализация фильтров
-function initFilters() {
-    document.querySelectorAll('.filter').forEach(filter => {
-        const dropdown = filter.querySelector('.dropdown');
+async function initFilters() {
+    try {
+        const filters = await api.getFilters();
         
-        filter.addEventListener('click', (e) => {
-            e.stopPropagation();
-            document.querySelectorAll('.filter .dropdown.open').forEach(el => {
-                if (el !== dropdown) el.classList.remove('open');
-            });
-            dropdown.classList.toggle('open');
+        // Авторы
+        const authorFilter = document.querySelector('.filter[data-filter="author"] .dropdown');
+        authorFilter.innerHTML = '<li data-value="">Автор</li>';
+        filters.authors.forEach(author => {
+            authorFilter.innerHTML += `<li data-value="${author}">${author}</li>`;
+        });
+        
+        // Жанры
+        const genreFilter = document.querySelector('.filter[data-filter="genre"] .dropdown');
+        genreFilter.innerHTML = '<li data-value="">Жанр</li>';
+        filters.genres.forEach(genre => {
+            genreFilter.innerHTML += `<li data-value="${genre}">${genre}</li>`;
+        });
+        
+        // Годы
+        const yearFilter = document.querySelector('.filter[data-filter="edition"] .dropdown');
+        yearFilter.innerHTML = '<li data-value="">Издание</li>';
+        filters.years.forEach(year => {
+            yearFilter.innerHTML += `<li data-value="${year}">${year}</li>`;
         });
 
-        dropdown.addEventListener('click', (e) => {
-            if (e.target.tagName === 'LI') {
-                filter.querySelector('span').textContent = e.target.textContent;
-                filter.dataset.selected = e.target.dataset.value;
-                dropdown.classList.remove('open');
-                // Здесь будет применение фильтра
-            }
+        document.querySelectorAll('.filter').forEach(filter => {
+            filter.addEventListener('click', function(e) {
+                if (e.target.tagName === 'LI' && e.target.dataset.value) {
+                    this.querySelector('span').textContent = e.target.textContent;
+                    currentPage = 1;
+                    loadBooks();
+                }
+            });
         });
-    });
-    
-    document.addEventListener('click', () => {
-        document.querySelectorAll('.dropdown.open').forEach(el => {
-            el.classList.remove('open');
-        });
-    });
+        
+    } catch (error) {
+        console.error('Ошибка загрузки фильтров:', error);
+    }
 }
 
 // Инициализация поиска
@@ -309,6 +409,18 @@ function initSearch() {
     searchInput.addEventListener('blur', () => {
         if (!searchInput.value.trim()) {
             searchElement.classList.remove('focused');
+        }
+    });
+
+    document.querySelector('.search-btn').addEventListener('click', () => {
+        currentPage = 1;
+        loadBooks();
+    });
+    
+    document.querySelector('.search input').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            currentPage = 1;
+            loadBooks();
         }
     });
 }
@@ -388,3 +500,8 @@ function initDragAndDrop(dropAreaId, previewId) {
     }
     dropArea.dataset.initialized = "true";
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('create-book-submit').addEventListener('click', createNewBook);
+    document.getElementById('add-to-library').addEventListener('click', addToLibraryHandler);
+});

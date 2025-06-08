@@ -18,6 +18,112 @@ window.setActiveLink = function() {
     });
 }
 
+export function checkAuth() {
+    if (!JSON.parse(localStorage.getItem('user'))) {
+        throw new Error('Требуется авторизация');
+    }
+}
+
+export async function apiRequest(action, data = {}, method = 'POST') {
+    try {
+        const response = await fetch(`api/ajax.php?action=${action}`, {
+            method,
+            headers: method !== 'GET' ? {'Content-Type': 'application/json'} : {},
+            body: method !== 'GET' ? JSON.stringify(data) : null,
+            credentials: 'include'
+        });
+        
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.error || 'Request failed');
+        return result;
+    } catch (error) {
+        console.error('API Error:', error);
+        throw error;
+    }
+}
+
+export const api = {
+    async login(username, password) {
+        return apiRequest('login', { username, password });
+    },
+    
+    async register(userData) {
+        return apiRequest('register', userData);
+    },
+    
+    async getBooks(filters = {}, page = 1, isLibrary = false) {
+        return apiRequest('get_books', { ...filters, page, library: isLibrary }, 'GET');
+    },
+    
+    async addBook(bookData) {
+        checkAuth();
+        return apiRequest('add_book', bookData);
+    },
+    
+    async updateBook(bookId, bookData) {
+        checkAuth();
+        return apiRequest('update_book', { id: bookId, ...bookData });
+    },
+    
+    async deleteBook(bookId) {
+        checkAuth();
+        return apiRequest('delete_book', { id: bookId });
+    },
+    
+    async addToLibrary(bookId) {
+        checkAuth();
+        return apiRequest('add_to_library', { book_id: bookId });
+    },
+    
+    async getProfile() {
+        checkAuth();
+        return apiRequest('get_profile');
+    },
+    
+    async updateProfile(profileData) {
+        checkAuth();
+        return apiRequest('update_profile', profileData);
+    },
+    
+    async changePassword(oldPassword, newPassword) {
+        checkAuth();
+        return apiRequest('change_password', { 
+            old_password: oldPassword, 
+            new_password: newPassword 
+        });
+    },
+    
+    async deleteAccount() {
+        checkAuth();
+        return apiRequest('delete_account');
+    },
+    
+    async getFilters() {
+        return apiRequest('get_filters', {}, 'GET');
+    },
+    
+    async uploadFile(file, type) {
+        checkAuth();
+        const formData = new FormData();
+        formData.append('file', file);
+        
+        const response = await fetch(`api/ajax.php?action=upload_${type}`, {
+            method: 'POST',
+            body: formData
+        });
+        
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.error || 'Upload failed');
+        return result;
+    }
+};
+
+function loginSuccess(user) { // Новая функция
+    localStorage.setItem('user', JSON.stringify(user));
+    updateUI(user);
+    closeModal('login-modal');
+}
+
 // Управление состоянием авторизации
 window.initAuth = function() {
     const user = JSON.parse(localStorage.getItem('user'));
@@ -99,57 +205,36 @@ document.addEventListener('keydown', (e) => {
     }
 });
 
-function loginUser() {
-    const username = document.getElementById('login-username').value;
-    const password = document.getElementById('login-password').value;
-    const remember = document.getElementById('remember-me').checked;
-    
-    // Заглушка - в реальности проверка на сервере
-    if (username && password) {
-        const user = {
-            username,
-            name: username, // Для демо
-            avatar: 'src/default_avatar.png'
-        };
+async function loginUser() {
+    try {
+        const user = await api.login(
+            document.getElementById('login-username').value,
+            document.getElementById('login-password').value
+        );
         
         localStorage.setItem('user', JSON.stringify(user));
-        if (remember) {
-            localStorage.setItem('remember', 'true');
-        }
-        
         updateUI(user);
         closeModal('login-modal');
-    } else {
-        alert('Заполните все поля');
+    } catch (error) {
+        alert(error.message);
     }
 }
 
-function registerUser() {
-    const username = document.getElementById('register-username').value;
-    const name = document.getElementById('register-name').value;
-    const password = document.getElementById('register-password').value;
-    const confirm = document.getElementById('register-confirm').value;
-    const email = document.getElementById('register-email').value;
+async function registerUser() {
+    const userData = {
+        username: document.getElementById('register-username').value,
+        name: document.getElementById('register-name').value,
+        password: document.getElementById('register-password').value,
+        email: document.getElementById('register-email').value
+    };
     
-    // Заглушка - валидация
-    if (password !== confirm) {
-        alert('Пароли не совпадают');
-        return;
-    }
-    
-    if (username && name && password && email) {
-        const user = {
-            username,
-            name,
-            email,
-            avatar: 'src/default_avatar.png'
-        };
-        
+    try {
+        const user = await api.register(userData);
         localStorage.setItem('user', JSON.stringify(user));
         updateUI(user);
         closeModal('register-modal');
-    } else {
-        alert('Заполните все поля');
+    } catch (error) {
+        alert(error.message);
     }
 }
 
@@ -169,6 +254,8 @@ export function updateUI(user) {
     if (isLoggedIn && usernameDisplay) {
         usernameDisplay.textContent = user.name;
         document.getElementById('user-avatar').src = user.avatar;
+        document.getElementById('profile-username-display').textContent = user.name || ''; // Новые строки
+        document.getElementById('profile-nickname-display').textContent = user.username || ''; // Новые строки
     }
 }
 
@@ -192,146 +279,179 @@ function logoutUser() {
     window.location.hash = '#/';
 }
 
-export function initProfile() {
-    const user = JSON.parse(localStorage.getItem('user'));
-    if (!user) {
-        window.location.hash = '#/';
-        return;
-    }
-
-    // Заполняем данные профиля
-    document.getElementById('profile-username-display').textContent = user.name || '';
-    document.getElementById('profile-nickname-display').textContent = user.username || '';
-    document.getElementById('profile-email-display').textContent = user.email || '';
-    document.getElementById('profile-age-display').textContent = user.age || '';
-    document.getElementById('profile-gender-display').textContent = 
-        user.gender === 'Мужской' ? 'Мужской' : 
-        user.gender === 'Женский' ? 'Женский' : 'Не указан';
-
-    document.querySelectorAll('.edit-icon').forEach(icon => {
-        icon.addEventListener('click', function() {
-            const field = this.closest('.editable-field');
-            const display = field.querySelector('span');
-            const input = field.nextElementSibling;
-            const controls = field.querySelector('.edit-controls');
-            
-            display.style.display = 'none';
-            this.style.display = 'none';
-            input.style.display = 'block';
-            input.value = display.textContent;
-            controls.style.display = 'flex';
-            
-            if (input.tagName === 'SELECT') {
-                input.value = user.gender || '';
-            }
-        });
-    });
-
-    document.querySelectorAll('.cancel-icon').forEach(icon => {
-        icon.addEventListener('click', function() {
-            const field = this.closest('.editable-field');
-            const display = field.querySelector('span');
-            const input = field.nextElementSibling;
-            const editIcon = field.querySelector('.edit-icon');
-            const controls = field.querySelector('.edit-controls');
-            
-            input.style.display = 'none';
-            display.style.display = 'inline';
-            editIcon.style.display = 'block';
-            controls.style.display = 'none';
-        });
-    });
-
-    document.querySelectorAll('.save-icon').forEach(icon => {
-        icon.addEventListener('click', function() {
-            const field = this.closest('.editable-field');
-            const display = field.querySelector('span');
-            const input = field.nextElementSibling;
-            const editIcon = field.querySelector('.edit-icon');
-            const controls = field.querySelector('.edit-controls');
-            const fieldName = input.id.replace('profile-', '').replace('-input', '');
-            
-            const newValue = input.value;
-            display.textContent = newValue;
-            
-            // Обновляем данные пользователя
-            user[fieldName] = newValue;
-            localStorage.setItem('user', JSON.stringify(user));
-            
-            // Возвращаем отображение
-            input.style.display = 'none';
-            display.style.display = 'inline';
-            editIcon.style.display = 'block';
-            controls.style.display = 'none';
-            
-            // Обновляем имя в хедере
-            if (fieldName === 'username') {
-                document.getElementById('username-display').textContent = newValue;
-            }
-        });
-    });
-
-    const visibilityBtn = document.querySelector('.visibility');
-    if (visibilityBtn) {
-        visibilityBtn.addEventListener('click', function() {
-        const display = document.getElementById('profile-email-display');
-        const icon = this.querySelector('.visibility-icon');
-        
-        if (display.textContent === user.email) {
-            display.textContent = '••••@••••.•••';
-            icon.classList.remove('fa-eye-slash');
-            icon.classList.add('fa-eye');
-        } else {
-            display.textContent = user.email;
-            icon.classList.remove('fa-eye');
-            icon.classList.add('fa-eye-slash');
+export async function initProfile() {
+    try {
+        const user = await api.getProfile();
+        localStorage.setItem('user', JSON.stringify(user));
+        if (!user) {
+            window.location.hash = '#/';
+            return;
         }
+
+        // Заполняем данные профиля
+        document.getElementById('profile-username-display').textContent = user.name || '';
+        document.getElementById('profile-nickname-display').textContent = user.username || '';
+        document.getElementById('profile-email-display').textContent = user.email || '';
+        document.getElementById('profile-age-display').textContent = user.age || '';
+        document.getElementById('profile-gender-display').textContent = 
+            user.gender === 'male' ? 'Мужской' : 
+            user.gender === 'female' ? 'Женский' : 'Не указан';
+
+        document.querySelectorAll('.edit-icon').forEach(icon => {
+            icon.addEventListener('click', function() {
+                const field = this.closest('.editable-field');
+                const display = field.querySelector('span');
+                const input = field.nextElementSibling;
+                const controls = field.querySelector('.edit-controls');
+                
+                display.style.display = 'none';
+                this.style.display = 'none';
+                input.style.display = 'block';
+                input.value = display.textContent;
+                controls.style.display = 'flex';
+                
+                if (input.tagName === 'SELECT') {
+                    input.value = user.gender || '';
+                }
+            });
         });
-    }
-    
-    if (user.avatar) {
-        document.getElementById('profile-avatar-preview').src = user.avatar;
-    }
 
-    // Обработчики
-    document.getElementById('change-avatar-btn')?.addEventListener('click', () => {
-        document.getElementById('profile-avatar-input').click();
-    });
+        document.querySelectorAll('.cancel-icon').forEach(icon => {
+            icon.addEventListener('click', function() {
+                const field = this.closest('.editable-field');
+                const display = field.querySelector('span');
+                const input = field.nextElementSibling;
+                const editIcon = field.querySelector('.edit-icon');
+                const controls = field.querySelector('.edit-controls');
+                
+                input.style.display = 'none';
+                display.style.display = 'inline';
+                editIcon.style.display = 'block';
+                controls.style.display = 'none';
+            });
+        });
 
-    document.getElementById('profile-avatar-input')?.addEventListener('change', function(e) {
-        if (e.target.files.length > 0) {
-            const reader = new FileReader();
-            reader.onload = function(event) {
-                user.avatar = event.target.result;
+        document.querySelectorAll('.save-icon').forEach(icon => {
+            icon.addEventListener('click', function() {
+                const field = this.closest('.editable-field');
+                const display = field.querySelector('span');
+                const input = field.nextElementSibling;
+                const editIcon = field.querySelector('.edit-icon');
+                const controls = field.querySelector('.edit-controls');
+                const fieldName = input.id.replace('profile-', '').replace('-input', '');
+                
+                const newValue = input.value;
+                display.textContent = newValue;
+                
+                // Обновляем данные пользователя
+                user[fieldName] = newValue;
                 localStorage.setItem('user', JSON.stringify(user));
-                document.getElementById('profile-avatar-preview').src = user.avatar;
-                document.getElementById('user-avatar').src = user.avatar;
-            };
-            reader.readAsDataURL(e.target.files[0]);
+                
+                // Возвращаем отображение
+                input.style.display = 'none';
+                display.style.display = 'inline';
+                editIcon.style.display = 'block';
+                controls.style.display = 'none';
+                
+                // Обновляем имя в хедере
+                if (fieldName === 'username') {
+                    document.getElementById('username-display').textContent = newValue;
+                }
+            });
+        });
+
+        const visibilityBtn = document.querySelector('.visibility');
+        if (visibilityBtn) {
+            visibilityBtn.addEventListener('click', function() {
+            const display = document.getElementById('profile-email-display');
+            const icon = this.querySelector('.visibility-icon');
+            
+            if (display.textContent === user.email) {
+                display.textContent = '••••@••••.•••';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            } else {
+                display.textContent = user.email;
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            }
+            });
         }
-    });
+        
+        if (user.avatar) {
+            document.getElementById('profile-avatar-preview').src = user.avatar;
+        }
 
-    document.getElementById('logout-profile-btn')?.addEventListener('click', logoutUser);
-    document.getElementById('logout-btn')?.addEventListener('click', logoutUser);
-    document.getElementById('profile-btn')?.addEventListener('click', function() {
-        window.location.hash = '#/profile';
-        document.getElementById('user-menu').style.display = 'none';
-    });
+        // Обработчики
+        document.getElementById('change-avatar-btn')?.addEventListener('click', () => {
+            document.getElementById('profile-avatar-input').click();
+        });
 
-    // Обработчики для сохранения данных
-    const saveField = (id, key) => {
-        document.getElementById(id)?.addEventListener('change', function() {
-            user[key] = this.value;
-            localStorage.setItem('user', JSON.stringify(user));
-            if (key === 'name') {
-                document.getElementById('username-display').textContent = user.name;
+        document.getElementById('profile-avatar-input').addEventListener('change', async (e) => {
+            if (e.target.files[0]) {
+                try {
+                    const result = await api.uploadFile(e.target.files[0], 'avatar');
+                    user.avatar = result.avatar;
+                    localStorage.setItem('user', JSON.stringify(user));
+                    document.getElementById('profile-avatar-preview').src = user.avatar;
+                    document.getElementById('user-avatar').src = user.avatar;
+                } catch (error) {
+                    alert('Ошибка загрузки аватара: ' + error.message);
+                }
             }
         });
-    };
 
-    saveField('profile-username', 'name');
-    saveField('profile-nickname', 'username');
-    saveField('profile-email', 'email');
-    saveField('profile-age', 'age');
-    saveField('profile-gender', 'gender');
+        document.getElementById('change-password-btn').addEventListener('click', async () => {
+            const oldPassword = prompt('Введите старый пароль:');
+            const newPassword = prompt('Введите новый пароль:');
+            
+            if (oldPassword && newPassword) {
+                try {
+                    await api.changePassword(oldPassword, newPassword);
+                    alert('Пароль успешно изменен!');
+                } catch (error) {
+                    alert(error.message);
+                }
+            }
+        });
+
+        document.getElementById('delete-account-btn').addEventListener('click', async () => {
+            if (confirm('Вы уверены, что хотите удалить аккаунт? Это действие нельзя отменить.')) {
+                try {
+                    await api.deleteAccount();
+                    logoutUser();
+                    alert('Ваш аккаунт был успешно удален');
+                } catch (error) {
+                    alert(error.message);
+                }
+            }
+        });
+
+        document.getElementById('logout-profile-btn')?.addEventListener('click', logoutUser);
+        document.getElementById('logout-btn')?.addEventListener('click', logoutUser);
+        document.getElementById('profile-btn')?.addEventListener('click', function() {
+            window.location.hash = '#/profile';
+            document.getElementById('user-menu').style.display = 'none';
+        });
+
+        // Обработчики для сохранения данных
+        const saveField = (id, key) => {
+            document.getElementById(id)?.addEventListener('change', function() {
+                user[key] = this.value;
+                localStorage.setItem('user', JSON.stringify(user));
+                if (key === 'name') {
+                    document.getElementById('username-display').textContent = user.name;
+                }
+            });
+        };
+
+        saveField('profile-username', 'name');
+        saveField('profile-nickname', 'username');
+        saveField('profile-email', 'email');
+        saveField('profile-age', 'age');
+        saveField('profile-gender', 'gender');
+    } catch (error) {
+        console.error('Ошибка загрузки профиля:', error);
+        alert('Не удалось загрузить профиль');
+    }
 }

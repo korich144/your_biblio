@@ -1,0 +1,13 @@
+RewriteEngine On
+RewriteBase /
+
+# Перенаправление API запросов
+RewriteRule ^api/(.*)$ api/$1 [L]
+
+# Разрешить доступ к uploads
+RewriteRule ^uploads/ - [L]
+
+# Single Page Application
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.php [L,QSA]
