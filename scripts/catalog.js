@@ -18,13 +18,11 @@ export function initCatalog() {
         // Обработка кнопки создания книги
         if (e.target.closest('#create-book-btn') && !isCatalogPage) {
             openModal('create-book-modal');
-            initAutocompleteFields(); 
         }
         
         // Обработка кнопки редактирования
         if (e.target.closest('#edit-book') && !isCatalogPage) {
             openEditBookModal();
-            initAutocompleteFields(); 
         }
         
         // Обработка кнопки удаления
@@ -158,7 +156,7 @@ function fillEditBookModal(book) {
     modal.querySelector('.publisher-input').value = book.publisher || '';
     modal.querySelector('.year-input').value = book.year || '';
     modal.querySelector('.pages-input').value = book.pages || '';
-    modal.querySelector('.genre-select').value = book.genre || '';
+    modal.querySelector('.genre-input').value = book.genre || '';
     modal.querySelector('.description-textarea').value = book.description || '';
     
     // Установка обложки
@@ -202,19 +200,24 @@ async function initAutocompleteFields() {
     try {
         const { authors, genres } = await getAuthorsGenres();
         
-        // Инициализация автодополнения для поля автора
-        const authorInput = document.getElementById('create-author-input');
-        if (authorInput) {
-            initAutocomplete(authorInput, authors);
-        }
+        // Для формы создания
+        initField('create-author-input', authors);
+        initField('create-genre-input', genres);
         
-        // Инициализация автодополнения для поля жанра
-        const genreInput = document.getElementById('create-genre-input');
-        if (genreInput) {
-            initAutocomplete(genreInput, genres);
-        }
+        // Для формы редактирования
+        initField('edit-author-input', authors);
+        initField('edit-genre-input', genres);
+        
     } catch (error) {
         console.error('Ошибка инициализации автодополнения:', error);
+    }
+}
+
+// Вспомогательная функция для инициализации поля
+function initField(fieldId, data) {
+    const input = document.getElementById(fieldId);
+    if (input && data) {
+        initAutocomplete(input, data);
     }
 }
 
@@ -294,6 +297,26 @@ function openEditBookModal() {
     openModal('edit-book-modal');
 }
 
+async function initAutocompleteForEditForm() {
+    try {
+        const { authors, genres } = await getAuthorsGenres();
+        
+        // Для автора (если нужно)
+        const authorInput = document.getElementById('edit-author-input');
+        if (authorInput) {
+            initAutocomplete(authorInput, authors);
+        }
+        
+        // Для жанра
+        const genreInput = document.getElementById('edit-genre-input');
+        if (genreInput) {
+            initAutocomplete(genreInput, genres);
+        }
+    } catch (error) {
+        console.error('Ошибка инициализации автодополнения для редактирования:', error);
+    }
+}
+
 // Сохранение изменений
 async function saveBookChanges() {
     const modal = document.getElementById('edit-book-modal');
@@ -305,7 +328,7 @@ async function saveBookChanges() {
         publisher: modal.querySelector('.publisher-input').value,
         year: modal.querySelector('.year-input').value,
         pages: modal.querySelector('.pages-input').value,
-        genre: modal.querySelector('.genre-select').value,
+        genre: modal.querySelector('.edit-genre-input').value,
         description: modal.querySelector('.description-textarea').value
     };
 

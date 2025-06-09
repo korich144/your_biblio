@@ -1,7 +1,7 @@
 export function initAutocomplete(inputElement, data) {
     // Создаем контейнер для выпадающего списка
     const dropdown = document.createElement('div');
-    dropdown.className = 'autocomplete-dropdown';
+    dropdown.className = 'autocomplete-dropdown scrollable-fields';
     inputElement.parentNode.appendChild(dropdown);
     
     // Обработчик ввода текста
@@ -32,7 +32,7 @@ export function initAutocomplete(inputElement, data) {
     // Скрываем выпадающий список при потере фокуса
     inputElement.addEventListener('blur', () => {
         setTimeout(() => {
-            dropdown.innerHTML = '';
+            //dropdown.innerHTML = '';
         }, 200);
     });
 }

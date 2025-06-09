@@ -215,7 +215,9 @@
                 </div>
                 <div class="form-group">
                     <label>Автор</label>
-                    <input type="text" placeholder="Автор" class="book-author-input">
+                    <div class="autocomplete">
+                        <input type="text" placeholder="Автор" class="book-author-input" id="edit-author-input">
+                    </div>
                 </div>
                 <div class="form-group">
                     <label>Издательство</label>
@@ -231,11 +233,9 @@
                 </div>
                 <div class="form-group">
                     <label>Жанр</label>
-                    <select class="genre-select">
-                        <option>Выберите жанр</option>
-                        <option selected>Фантастика</option>
-                        <option>Детектив</option>
-                    </select>
+                    <div class="autocomplete">
+                        <input type="text" id="edit-genre-input" class="genre-input" placeholder="Введите жанр">
+                    </div>
                 </div>
                 <div class="form-group">
                     <label>Описание</label>
