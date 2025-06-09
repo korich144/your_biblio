@@ -252,6 +252,22 @@ function handleAddBook($db, $data) {
         }
     }
     
+    $defaultImages = [
+        'src/book_black.png',
+        'src/book_blue.png',
+        'src/book_green.png',
+        'src/book_oran.png',
+        'src/book_purple.png',
+        'src/book_red.png',
+        'src/book_yellow.png'
+    ];
+    
+    // Если изображение не указано, выбираем случайное из стандартных
+    if (empty($data['image'])) {
+        $randomIndex = array_rand($defaultImages);
+        $data['image'] = $defaultImages[$randomIndex];
+    }
+
     // Формируем поля и значения
     $fields = ['title', 'author', 'publisher', 'year', 'pages', 'genre', 'description', 'image', 'is_public', 'created_by'];
     $values = [];
@@ -260,10 +276,24 @@ function handleAddBook($db, $data) {
         if ($field === 'created_by') {
             $values[] = $user_id;
         } elseif ($field === 'is_public') {
-            // Исправлено: передаем 'f' вместо false
-            $values[] = 'f';
+            $values[] = isset($data[$field]) && $data[$field] ? 't' : 'f';
         } else {
-            $values[] = $data[$field] ?? null;
+            $value = $data[$field] ?? null;
+            
+            if (in_array($field, ['year', 'pages'])) {
+                if ($value === '' || $value === null) {
+                    $values[] = null;
+                } 
+                elseif (is_numeric($value)) {
+                    $values[] = (int)$value;
+                } 
+                else {
+                    throw new Exception("Некорректное значение для поля $field");
+                }
+            } 
+            else {
+                $values[] = $value;
+            }
         }
     }
     
@@ -310,12 +340,33 @@ function handleUpdateBook($db, $data) {
     ];
     
     $updates = [];
-    $params = [$data['id']]; // $1 - ID книги
+    $params = [$data['id']];
     
     foreach ($fields as $field) {
         if (array_key_exists($field, $data)) {
-            $updates[] = "$field = $" . (count($params) + 1);
-            $params[] = $data[$field];
+            $value = $data[$field];
+            
+            if (in_array($field, ['year', 'pages'])) {
+                if ($value === '' || $value === null) {
+                    $updates[] = "$field = $" . (count($params) + 1);
+                    $params[] = null;
+                } 
+                elseif (is_numeric($value)) {
+                    $updates[] = "$field = $" . (count($params) + 1);
+                    $params[] = (int)$value;
+                } 
+                else {
+                    continue;
+                }
+            }
+            elseif ($field === 'is_public') {
+                $updates[] = "$field = $" . (count($params) + 1);
+                $params[] = $value ? 't' : 'f';
+            }
+            else {
+                $updates[] = "$field = $" . (count($params) + 1);
+                $params[] = $value;
+            }
         }
     }
     

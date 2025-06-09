@@ -328,7 +328,7 @@ async function saveBookChanges() {
         publisher: modal.querySelector('.publisher-input').value,
         year: modal.querySelector('.year-input').value,
         pages: modal.querySelector('.pages-input').value,
-        genre: modal.querySelector('.edit-genre-input').value,
+        genre: modal.querySelector('.genre-input').value,
         description: modal.querySelector('.description-textarea').value
     };
 
@@ -629,8 +629,3 @@ function initDragAndDrop(dropAreaId, previewId) {
     }
     dropArea.dataset.initialized = "true";
 }
-
-document.addEventListener('DOMContentLoaded', () => {
-    document.getElementById('create-book-submit').addEventListener('click', createNewBook);
-    document.getElementById('add-to-library').addEventListener('click', addToLibraryHandler);
-});
