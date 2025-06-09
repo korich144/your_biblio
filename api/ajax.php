@@ -310,7 +310,7 @@ function handleUpdateBook($db, $data) {
     ];
     
     $updates = [];
-    $params = [$data['id']];
+    $params = [$data['id']]; // $1 - ID книги
     
     foreach ($fields as $field) {
         if (array_key_exists($field, $data)) {
@@ -324,16 +324,21 @@ function handleUpdateBook($db, $data) {
     }
     
     $params[] = $user_id;
+    $userParamIndex = count($params);
     
     $query = "UPDATE books SET " . implode(', ', $updates) . " 
-              WHERE id = $1 AND created_by = $" . count($params) . " 
+              WHERE id = $1 AND created_by = $$userParamIndex 
               RETURNING *";
     
     $result = pg_query_params($db, $query, $params);
+    if (!$result) {
+        throw new Exception('Update failed: ' . pg_last_error($db));
+    }
+    
     $book = pg_fetch_assoc($result);
     
     if (!$book) {
-        throw new Exception('Update failed or book not found');
+        throw new Exception('Book not found or you dont have permission');
     }
     
     echo json_encode($book);

@@ -1,4 +1,5 @@
 import { openModal, closeModal, api } from './common.js';
+import { initAutocomplete, getAuthorsGenres } from './autocomplete.js';
 
 const MAIN_CONTAINER = document.getElementById('main-container');
 
@@ -17,11 +18,13 @@ export function initCatalog() {
         // Обработка кнопки создания книги
         if (e.target.closest('#create-book-btn') && !isCatalogPage) {
             openModal('create-book-modal');
+            initAutocompleteFields(); 
         }
         
         // Обработка кнопки редактирования
         if (e.target.closest('#edit-book') && !isCatalogPage) {
             openEditBookModal();
+            initAutocompleteFields(); 
         }
         
         // Обработка кнопки удаления
@@ -48,7 +51,6 @@ export function initCatalog() {
         }
 
         if (e.target.closest('#add-to-library') && isCatalogPage) {
-            //addToLibrary(currentBookId);
             addToLibraryHandler();
             closeModal('book-details-modal');
         }
@@ -74,6 +76,7 @@ export function initCatalog() {
     }, 0);
 
     MAIN_CONTAINER.addEventListener('click', handleBookClick);
+    initAutocompleteFields();
 };
 
 let booksData = []; // Глобальная переменная для хранения книг
@@ -195,6 +198,26 @@ function renderBooks(books) {
     });
 }
 
+async function initAutocompleteFields() {
+    try {
+        const { authors, genres } = await getAuthorsGenres();
+        
+        // Инициализация автодополнения для поля автора
+        const authorInput = document.getElementById('create-author-input');
+        if (authorInput) {
+            initAutocomplete(authorInput, authors);
+        }
+        
+        // Инициализация автодополнения для поля жанра
+        const genreInput = document.getElementById('create-genre-input');
+        if (genreInput) {
+            initAutocomplete(genreInput, genres);
+        }
+    } catch (error) {
+        console.error('Ошибка инициализации автодополнения:', error);
+    }
+}
+
 let currentPage = 1;
 
 function renderPagination(total, perPage, current) {
@@ -247,6 +270,18 @@ function openBookDetails(bookId) {
     
     currentBookId = bookId;
     fillBookDetailsModal(book);
+    
+    // Проверка прав доступа
+    const user = JSON.parse(localStorage.getItem('user'));
+    const canEdit = user && user.id == book.created_by;
+    if (document.getElementById('edit-book')) {
+        document.getElementById('edit-book').style.display = 
+            canEdit ? 'inline-block' : 'none';
+    }
+    if (document.getElementById('send-to-catalog')) {
+        document.getElementById('send-to-catalog').style.display = 
+            canEdit ? 'inline-block' : 'none';
+    }
     openModal('book-details-modal');
 }
 
@@ -260,37 +295,47 @@ function openEditBookModal() {
 }
 
 // Сохранение изменений
-function saveBookChanges() {
-    const book = booksData.find(b => b.id == currentBookId);
-    if (!book) return;
-    
+async function saveBookChanges() {
     const modal = document.getElementById('edit-book-modal');
-    book.title = modal.querySelector('.book-title-input').value;
-    book.author = modal.querySelector('.book-author-input').value;
-    book.publisher = modal.querySelector('.publisher-input').value;
-    book.year = modal.querySelector('.year-input').value;
-    book.pages = modal.querySelector('.pages-input').value;
-    book.genre = modal.querySelector('.genre-select').value;
-    book.description = modal.querySelector('.description-textarea').value;
+    const bookId = currentBookId;
     
-    // Обновляем изображение если было изменено
+    const bookData = {
+        title: modal.querySelector('.book-title-input').value,
+        author: modal.querySelector('.book-author-input').value,
+        publisher: modal.querySelector('.publisher-input').value,
+        year: modal.querySelector('.year-input').value,
+        pages: modal.querySelector('.pages-input').value,
+        genre: modal.querySelector('.genre-select').value,
+        description: modal.querySelector('.description-textarea').value
+    };
+
     const fileInput = modal.querySelector('#edit-file-input');
     if (fileInput.files.length > 0) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            book.image = e.target.result;
-            renderBooks(booksData);
-            setupBookEvents();
-        };
-        reader.readAsDataURL(fileInput.files[0]);
+        try {
+            const result = await api.uploadFile(fileInput.files[0], 'cover');
+            bookData.image = result.cover;
+        } catch (error) {
+            alert('Не удалось загрузить обложку: ' + error.message);
+            return;
+        }
     }
-    
-    // Обновляем представление
-    renderBooks(booksData);
-    setupBookEvents();
-    
-    closeModal('edit-book-modal');
-    openBookDetails(currentBookId);
+
+    try {
+        // Отправляем изменения на сервер
+        const updatedBook = await api.updateBook(bookId, bookData);
+        
+        // Обновляем локальные данные
+        const bookIndex = booksData.findIndex(b => b.id == bookId);
+        if (bookIndex !== -1) {
+            booksData[bookIndex] = updatedBook;
+        }
+        
+        renderBooks(booksData);
+        closeModal('edit-book-modal');
+        openBookDetails(bookId);
+    } catch (error) {
+        alert('Ошибка сохранения: ' + error.message);
+    }
 }
 
 async function addToLibraryHandler() {
@@ -321,11 +366,11 @@ async function createNewBook() {
     
     const bookData = {
         title: document.querySelector('#create-book-modal input[placeholder="Введите название"]').value,
-        author: document.querySelector('#create-book-modal select').value,
+        author: document.querySelector('#create-book-modal input[placeholder="Введите автора"]').value,
         publisher: document.querySelector('#create-book-modal input[placeholder="Название издательства"]').value,
         year: document.querySelector('#create-book-modal input[placeholder="Год выпуска"]').value,
         pages: document.querySelector('#create-book-modal input[placeholder="Введите число"]').value,
-        genre: document.querySelector('#create-book-modal select').value,
+        genre: document.querySelector('#create-book-modal input[placeholder="Введите жанр"]').value,
         description: document.querySelector('#create-book-modal textarea').value,
         image: coverUrl,
         is_public: false // Книга не публичная по умолчанию

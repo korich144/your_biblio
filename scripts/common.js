@@ -246,6 +246,20 @@ async function registerUser() {
     }
 }
 
+async function getAuthorsGenres() {
+    try {
+        const response = await fetch('api/ajax.php?action=get_filters');
+        const data = await response.json();
+        return {
+            authors: data.authors || [],
+            genres: data.genres || []
+        };
+    } catch (error) {
+        console.error('Ошибка загрузки фильтров:', error);
+        return { authors: [], genres: [] };
+    }
+}
+
 export function updateUI(user) {
     const isLoggedIn = !!user;
     const myLibraryLink = document.getElementById('my-library-link');
