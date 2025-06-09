@@ -179,7 +179,7 @@ function handleGetBooks($db, $params) {
         $user_id = $_SESSION['user_id'] ?? 0;
         if (!$user_id) throw new Exception('Not authorized');
         
-        $where[] = "b.id IN (SELECT book_id FROM user_library WHERE user_id = $1)";
+        $where[] = "EXISTS (SELECT 1 FROM user_library ul WHERE ul.book_id = b.id AND ul.user_id = $1)";
         $queryParams[] = $user_id;
     } else {
         $where[] = "b.is_public = TRUE";

@@ -81,8 +81,8 @@ async function loadBooks() {
         const isLibraryPage = window.location.hash.includes('/my-library');
         const filters = getCurrentFilters();
         const page = currentPage;
-        
-        const response = await api.getBooks(filters, page, isLibraryPage);
+
+        const response = await api.getBooks({ ...filters, library: isLibraryPage }, page);
         booksData = response.books;
         renderBooks(booksData);
         renderPagination(response.total, response.perPage, response.page);

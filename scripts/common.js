@@ -52,7 +52,10 @@ export const api = {
     },
     
     async getBooks(filters = {}, page = 1, isLibrary = false) {
-        return apiRequest('get_books', { ...filters, page, library: isLibrary }, 'GET');
+        const queryParams = new URLSearchParams({ ...filters, page }).toString();
+        return fetch(`api/ajax.php?action=get_books&${queryParams}`, {
+            credentials: 'include'
+        }).then(response => response.json());
     },
     
     async addBook(bookData) {
