@@ -106,13 +106,13 @@ export const api = {
     },
     
     async uploadFile(file, type) {
-        checkAuth();
         const formData = new FormData();
-        formData.append(type, file); // Исправлено: используем type вместо 'file'
+        formData.append(type, file);
         
         const response = await fetch(`api/ajax.php?action=upload_${type}`, {
             method: 'POST',
-            body: formData
+            body: formData,
+            credentials: 'include'
         });
         
         const result = await response.json();

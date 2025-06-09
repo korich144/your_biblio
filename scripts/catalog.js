@@ -54,6 +54,18 @@ export function initCatalog() {
         }
     });
 
+    document.getElementById('send-to-catalog')?.addEventListener('click', async function() {
+        try {
+            await api.updateBook(currentBookId, { is_public: true });
+            const book = booksData.find(b => b.id == currentBookId);
+            if (book) book.is_public = true;
+            alert('Книга опубликована в каталоге!');
+            closeModal('book-details-modal');
+        } catch (error) {
+            alert('Ошибка публикации книги: ' + error.message);
+        }
+    });
+
     // Инициализация Drag and Drop
     initDragAndDrop('drop-area', 'preview-image');
     initDragAndDrop('edit-drop-area', 'edit-preview-image');
@@ -292,10 +304,31 @@ async function addToLibraryHandler() {
 }
 
 async function createNewBook() {
+    const dropArea = document.getElementById('drop-area');
+    const fileInput = dropArea.querySelector('.file-input');
+    
+    let coverUrl = '';
+    if (fileInput.files.length > 0) {
+        try {
+            const result = await api.uploadFile(fileInput.files[0], 'cover');
+            coverUrl = result.cover;
+        } catch (error) {
+            console.error('Ошибка загрузки обложки:', error);
+            alert('Не удалось загрузить обложку: ' + error.message);
+            return;
+        }
+    }
+    
     const bookData = {
         title: document.querySelector('#create-book-modal input[placeholder="Введите название"]').value,
         author: document.querySelector('#create-book-modal select').value,
-        // Собираем остальные данные
+        publisher: document.querySelector('#create-book-modal input[placeholder="Название издательства"]').value,
+        year: document.querySelector('#create-book-modal input[placeholder="Год выпуска"]').value,
+        pages: document.querySelector('#create-book-modal input[placeholder="Введите число"]').value,
+        genre: document.querySelector('#create-book-modal select').value,
+        description: document.querySelector('#create-book-modal textarea').value,
+        image: coverUrl,
+        is_public: false // Книга не публичная по умолчанию
     };
     
     try {
@@ -303,9 +336,9 @@ async function createNewBook() {
         booksData.push(newBook);
         renderBooks(booksData);
         closeModal('create-book-modal');
-        alert('Книга успешно создана!');
+        alert('Книга успешно создана и добавлена в вашу библиотеку!');
     } catch (error) {
-        alert(error.message);
+        alert('Ошибка создания книги: ' + error.message);
     }
 }
 

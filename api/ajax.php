@@ -84,9 +84,12 @@ try {
 // ======================== ФУНКЦИИ ОБРАБОТКИ ========================
 
 function handleUpload($type) {
-    $uploadDir = $type === 'avatar' 
-        ? __DIR__ . '/../uploads/avatars/' 
-        : __DIR__ . '/../uploads/covers/';
+    $validTypes = ['avatar', 'cover'];
+    if (!in_array($type, $validTypes)) {
+        throw new Exception('Invalid upload type');
+    }
+    
+    $uploadDir = __DIR__ . '/../uploads/' . $type . 's/';
     
     if (!file_exists($uploadDir)) {
         mkdir($uploadDir, 0777, true);
@@ -99,7 +102,6 @@ function handleUpload($type) {
     $target = $uploadDir . $filename;
     
     if (move_uploaded_file($file['tmp_name'], $target)) {
-        // Возвращаем только имя файла
         return $filename;
     }
     throw new Exception('File upload failed');
@@ -257,6 +259,9 @@ function handleAddBook($db, $data) {
     foreach ($fields as $field) {
         if ($field === 'created_by') {
             $values[] = $user_id;
+        } elseif ($field === 'is_public') {
+            // Исправлено: передаем 'f' вместо false
+            $values[] = 'f';
         } else {
             $values[] = $data[$field] ?? null;
         }
@@ -273,7 +278,7 @@ function handleAddBook($db, $data) {
               
     $result = pg_query_params($db, $query, $values);
     if (!$result) {
-        throw new Exception(pg_last_error($db)); // Добавлено для отладки
+        throw new Exception(pg_last_error($db));
     }
     
     $book = pg_fetch_assoc($result);
@@ -281,6 +286,12 @@ function handleAddBook($db, $data) {
     if (!$book) {
         throw new Exception('Failed to add book: ' . pg_last_error($db));
     }
+    
+    // Автоматически добавляем книгу в библиотеку пользователя
+    pg_query_params($db,
+        "INSERT INTO user_library (user_id, book_id) VALUES ($1, $2)",
+        [$user_id, $book['id']]
+    );
     
     echo json_encode($book);
 }
