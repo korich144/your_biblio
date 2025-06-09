@@ -1,5 +1,7 @@
 import { openModal, closeModal, api } from './common.js';
 
+const MAIN_CONTAINER = document.getElementById('main-container');
+
 // Инициализация при загрузке страницы
 export function initCatalog() {
     if (document.querySelector('.books')) {
@@ -58,10 +60,20 @@ export function initCatalog() {
     setTimeout(() => {
         initDragAndDrop('edit-drop-area', 'edit-preview-image');
     }, 0);
+
+    MAIN_CONTAINER.addEventListener('click', handleBookClick);
 };
 
 let booksData = []; // Глобальная переменная для хранения книг
 let currentBookId = null; // ID текущей книги
+
+function handleBookClick(e) {
+    const card = e.target.closest('.book-card');
+    if (card) {
+        const bookId = card.dataset.id;
+        openBookDetails(bookId);
+    }
+}
 
 // Динамическая загрузка книг
 async function loadBooks() {

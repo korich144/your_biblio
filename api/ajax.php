@@ -174,7 +174,7 @@ function handleGetBooks($db, $params) {
     $where = [];
     $queryParams = [];
     $isLibrary = isset($params['library']) && $params['library'] === 'true';
-    
+
     if ($isLibrary) {
         $user_id = $_SESSION['user_id'] ?? 0;
         if (!$user_id) throw new Exception('Not authorized');
@@ -184,7 +184,7 @@ function handleGetBooks($db, $params) {
     } else {
         $where[] = "b.is_public = TRUE";
     }
-    
+
     // Фильтрация
     if (!empty($params['author'])) {
         $where[] = "b.author = $" . (count($queryParams) + 1);
