@@ -348,23 +348,14 @@ function handleDeleteBook($db, $data) {
     }
     
     $result = pg_query_params($db, 
-        "DELETE FROM books 
-         WHERE id = $1 AND created_by = $2 
-         RETURNING id",
-        [$data['id'], $user_id]
+        "DELETE FROM user_library 
+         WHERE user_id = $1 AND book_id = $2",
+        [$user_id, $data['id']]
     );
     
-    $deleted = pg_fetch_assoc($result);
-    
-    if (!$deleted) {
-        throw new Exception('Delete failed or book not found');
+    if (!$result) {
+        throw new Exception('Failed to remove from library');
     }
-    
-    // Также удаляем из библиотек пользователей
-    pg_query_params($db,
-        "DELETE FROM user_library WHERE book_id = $1",
-        [$data['id']]
-    );
     
     echo json_encode(['success' => true]);
 }
