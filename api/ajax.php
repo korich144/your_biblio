@@ -555,9 +555,9 @@ function handleDeleteAccount($db) {
 function handleGetFilters($db) {
     $result = pg_query($db,
         "SELECT 
-            (SELECT array_agg(DISTINCT author) FROM books) AS authors,
-            (SELECT array_agg(DISTINCT genre) FROM books) AS genres,
-            (SELECT array_agg(year) FROM (SELECT DISTINCT year FROM books ORDER BY year DESC) t) AS years"
+            (SELECT array_to_json(array_agg(DISTINCT author)) FROM books) AS authors,
+            (SELECT array_to_json(array_agg(DISTINCT genre)) FROM books) AS genres,
+            (SELECT array_to_json(array_agg(year)) FROM (SELECT DISTINCT year FROM books ORDER BY year DESC) t) AS years"
     );
     
     $filters = pg_fetch_assoc($result);
@@ -566,13 +566,9 @@ function handleGetFilters($db) {
         throw new Exception('Failed to get filters');
     }
     
-    // Преобразуем массивы PostgreSQL в PHP массивы
-    foreach ($filters as &$value) {
-        if (strpos($value, '{') === 0) {
-            $value = str_replace(['{','}'], '', $value);
-            $value = $value ? explode(',', $value) : [];
-        }
-    }
+    $filters['authors'] = json_decode($filters['authors'], true) ?: [];
+    $filters['genres'] = json_decode($filters['genres'], true) ?: [];
+    $filters['years'] = json_decode($filters['years'], true) ?: [];
     
     echo json_encode($filters);
 }
