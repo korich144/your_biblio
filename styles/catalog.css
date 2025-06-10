@@ -36,6 +36,8 @@
 .filter span {
     color: #805300;
     font-weight: 500;
+    min-width: 100px;
+    text-align: center;
 }
 
 .arrow {
