@@ -485,7 +485,8 @@ async function initFilters() {
                     filter.querySelector('span').textContent = this.textContent;
                     currentPage = 1;
                     loadBooks();
-                    dropdown.style.display = 'none';
+                    document.querySelectorAll('.dropdown').forEach(dd => dd.style.display = 'none');
+                    console.log("a");
                 });
             });
         });
