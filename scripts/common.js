@@ -346,6 +346,7 @@ window.addEventListener('DOMContentLoaded', () => {
     loadHeader();
     loadFooter();
     initAuth(); // Инициализируем систему авторизации
+    initEnterHandlers();
 });
 
 document.getElementById('user-profile')?.addEventListener('click', function() {
@@ -604,4 +605,87 @@ export function debounce(func, wait) {
         clearTimeout(timeout);
         timeout = setTimeout(() => func.apply(context, args), wait);
     };
+}
+
+function initEnterHandlers() {
+    // Модалка входа
+    const loginUsername = document.getElementById('login-username');
+    const loginPassword = document.getElementById('login-password');
+    
+    if (loginUsername) {
+            loginUsername.addEventListener('keydown', e => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    document.getElementById('login-password').focus();
+                }
+            });
+    }
+  
+    if (loginPassword) {
+        loginPassword.addEventListener('keydown', e => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                document.getElementById('login-submit').click();
+            }
+        });
+    }
+
+    // Модалка регистрации
+    const registerFields = [
+        'register-username', 
+        'register-name', 
+        'register-password', 
+        'register-confirm'
+    ];
+  
+    registerFields.forEach((fieldId, index) => {
+        const field = document.getElementById(fieldId);
+        if (field) {
+            field.addEventListener('keydown', e => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    const nextFieldId = registerFields[index + 1] || 'register-email';
+                    document.getElementById(nextFieldId)?.focus();
+                }
+            });
+        }
+    });
+  
+    const registerEmail = document.getElementById('register-email');
+    if (registerEmail) {
+        registerEmail.addEventListener('keydown', e => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                document.getElementById('register-submit').click();
+            }
+        });
+    }
+
+    // Профиль
+    document.addEventListener('keydown', e => {
+        if (e.target.matches('#profile-username-input, #profile-nickname-input, ' + 
+                            '#profile-email-input, #profile-age-input, #profile-gender-input') && 
+            e.key === 'Enter') {
+            e.preventDefault();
+            
+            // Находим родительский .form-group, затем внутри него .editable-field
+            const formGroup = e.target.closest('.form-group');
+            if (formGroup) {
+                const editableField = formGroup.querySelector('.editable-field');
+                if (editableField) {
+                    const saveIcon = editableField.querySelector('.save-icon');
+                    if (saveIcon) saveIcon.click();
+                }
+            }
+        }
+    });
+
+  // Поиск
+    document.addEventListener('keydown', e => {
+        if (e.target.matches('.search input') && e.key === 'Enter') {
+            e.preventDefault();
+            const searchBtn = e.target.closest('.search').querySelector('.search-btn');
+            if (searchBtn) searchBtn.click();
+        }
+    });
 }
