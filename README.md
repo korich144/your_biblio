@@ -3,6 +3,8 @@
 ## Требования
 - OpenServer 5.3.8 (скачать с [официального сайта](https://ospanel.io/))
 - PostgreSQL 9.5+ (входит в состав OpenServer)
+- Apache_2.4 (входит в состав OpenServer)
+- PHP 8.0 (входит в состав OpenServer)
 
 ## Установка и настройка
 
