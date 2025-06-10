@@ -500,7 +500,7 @@ function initSearch(signal) {
     
     if (!searchInput || !clearButton) return;
 
-    initSearchAutocomplete(searchInput);
+    initSearchAutocomplete(searchInput, getCurrentFilters);
     
     searchInput.addEventListener('input', () => {
         if (searchInput.value.trim()) {

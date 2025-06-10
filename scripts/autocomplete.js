@@ -39,7 +39,7 @@ export function initAutocomplete(inputElement, data) {
     });
 }
 
-export function initSearchAutocomplete(inputElement) {
+export function initSearchAutocomplete(inputElement, getFilters) {
     const dropdown = document.createElement('div');
     dropdown.className = 'search-dropdown';
     inputElement.parentNode.appendChild(dropdown);
@@ -58,10 +58,19 @@ export function initSearchAutocomplete(inputElement) {
         controller = new AbortController();
         
         try {
+            const filters = getFilters();
+            
+            const params = new URLSearchParams({
+                action: 'search_suggestions',
+                query: value,
+                ...filters
+            });
+
             const response = await fetch(
-                `api/ajax.php?action=search_suggestions&query=${encodeURIComponent(value)}`,
+                `api/ajax.php?${params.toString()}`,
                 { signal: controller.signal }
             );
+
             const suggestions = await response.json();
             
             // Проверяем актуальность запроса
@@ -85,7 +94,7 @@ export function initSearchAutocomplete(inputElement) {
         } finally {
             controller = null;
         }
-    }, 300); // Задержка 300 мс
+    }, 300);
 
     inputElement.addEventListener('input', handleInput);
     

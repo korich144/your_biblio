@@ -74,7 +74,12 @@ try {
             break;
 
         case 'search_suggestions':
-            handleSearchSuggestions($db, $_GET['query']);
+            $filters = [
+                'author' => $_GET['author'] ?? '',
+                'genre' => $_GET['genre'] ?? '',
+                'year' => $_GET['year'] ?? ''
+            ];
+            handleSearchSuggestions($db, $_GET['query'], $filters);
             break;
             
         default:
@@ -667,14 +672,38 @@ function handleGetFilters($db) {
     echo json_encode($filters);
 }
 
-function handleSearchSuggestions($db, $query) {
-    $query = pg_escape_string($db, $query);
-    $result = pg_query($db, 
-        "SELECT title FROM books 
-         WHERE title ILIKE '%$query%'
-         GROUP BY title
-         ORDER BY COUNT(*) DESC
-         LIMIT 5");
+function handleSearchSuggestions($db, $query, $filters) {
+    $conditions = ["title ILIKE $1"];
+    $params = ['%' . $query . '%'];
+    $paramIndex = 2;
+
+    // Добавляем условия по фильтрам
+    if (!empty($filters['author'])) {
+        $conditions[] = "author = $" . $paramIndex++;
+        $params[] = $filters['author'];
+    }
+    
+    if (!empty($filters['genre'])) {
+        $conditions[] = "genre = $" . $paramIndex++;
+        $params[] = $filters['genre'];
+    }
+    
+    if (!empty($filters['year'])) {
+        $conditions[] = "year = $" . $paramIndex++;
+        $params[] = (int)$filters['year'];
+    }
+
+    $whereClause = count($conditions) > 1 ? 
+        'WHERE ' . implode(' AND ', $conditions) : 
+        'WHERE ' . $conditions[0];
+
+    $query = "SELECT title FROM books 
+              $whereClause
+              GROUP BY title
+              ORDER BY COUNT(*) DESC
+              LIMIT 5";
+
+    $result = pg_query_params($db, $query, $params);
     
     $suggestions = [];
     while ($row = pg_fetch_assoc($result)) {
