@@ -602,7 +602,7 @@
 
 #login-modal .modal,
 #register-modal .modal {
-    width: 25%;
+    width: 444px;
     min-width: 300px;
     max-width: 400px;
 }
