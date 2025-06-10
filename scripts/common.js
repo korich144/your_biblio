@@ -212,12 +212,51 @@ document.addEventListener('keydown', (e) => {
     }
 });
 
+export function showError(fieldId, message) {
+    const errorContainer = document.getElementById(`${fieldId}-error`);
+    const inputElement = document.getElementById(fieldId);
+    
+    if (errorContainer && inputElement) {
+        errorContainer.style.display = 'block';
+        errorContainer.textContent = message;
+        inputElement.classList.add('invalid');
+    }
+}
+
+export function clearError(fieldId) {
+    const errorContainer = document.getElementById(`${fieldId}-error`);
+    const inputElement = document.getElementById(fieldId);
+    
+    if (errorContainer && inputElement) {
+        errorContainer.style.display = 'none';
+        errorContainer.textContent = '';
+        inputElement.classList.remove('invalid');
+    }
+}
+
 async function loginUser() {
+    clearError('login-username');
+    clearError('login-password');
+    
+    const username = document.getElementById('login-username').value;
+    const password = document.getElementById('login-password').value;
+    
+    let isValid = true;
+
+    if (!username) {
+        showError('login-username', 'Логин обязателен');
+        isValid = false;
+    }
+    
+    if (!password) {
+        showError('login-password', 'Пароль обязателен');
+        isValid = false;
+    }
+    
+    if (!isValid) return;
+
     try {
-        const user = await api.login(
-            document.getElementById('login-username').value,
-            document.getElementById('login-password').value
-        );
+        const user = await api.login(username, password);
         
         localStorage.setItem('user', JSON.stringify(user));
         updateUI(user);
@@ -228,12 +267,49 @@ async function loginUser() {
 }
 
 async function registerUser() {
-    const userData = {
-        username: document.getElementById('register-username').value,
-        name: document.getElementById('register-name').value,
-        password: document.getElementById('register-password').value,
-        email: document.getElementById('register-email').value
-    };
+    clearError('register-username');
+    clearError('register-name');
+    clearError('register-password');
+    clearError('register-confirm');
+    clearError('register-email');
+    
+    const username = document.getElementById('register-username').value;
+    const name = document.getElementById('register-name').value;
+    const password = document.getElementById('register-password').value;
+    const confirm = document.getElementById('register-confirm').value;
+    const email = document.getElementById('register-email').value;
+    
+    let isValid = true;
+    
+    if (!username) {
+        showError('register-username', 'Логин обязателен');
+        isValid = false;
+    }
+    
+    if (!name) {
+        showError('register-name', 'Имя обязательно');
+        isValid = false;
+    }
+    
+    if (!password) {
+        showError('register-password', 'Пароль обязателен');
+        isValid = false;
+    } else if (password !== confirm) {
+        showError('register-confirm', 'Пароли не совпадают');
+        isValid = false;
+    }
+    
+    if (!email) {
+        showError('register-email', 'Email обязателен');
+        isValid = false;
+    } else if (!isValidEmail(email)) {
+        showError('register-email', 'Некорректный email');
+        isValid = false;
+    }
+    
+    if (!isValid) return;
+
+    const userData = { username, name, password, email };
     
     try {
         const user = await api.register(userData);
@@ -344,6 +420,8 @@ export async function initProfile(signal) {
                 const editIcon = field.querySelector('.edit-icon');
                 const controls = field.querySelector('.edit-controls');
                 const fieldId = input.id;
+
+                clearError(fieldId);
                 
                 let apiFieldName;
                 let value = input.value;
@@ -409,7 +487,7 @@ export async function initProfile(signal) {
                     editIcon.style.display = 'block';
                     controls.style.display = 'none';
                 } catch (error) {
-                    alert('Ошибка сохранения: ' + error.message);
+                    showError(fieldId, error.message);
                 }
             }, { signal });
         });

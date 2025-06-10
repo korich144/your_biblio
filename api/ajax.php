@@ -210,6 +210,12 @@ function handleUpdateProfile($db, $data) {
     $user_id = $_SESSION['user_id'] ?? 0;
     if (!$user_id) throw new Exception('Not authorized');
 
+    if (isset($data['username']) && empty(trim($data['username']))) {
+        throw new Exception('Логин обязателен');
+    }
+    if (isset($data['name']) && empty(trim($data['name']))) {
+        throw new Exception('Имя обязательно');
+    }
     if (!empty($data['email']) && !filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
         throw new Exception('Некорректный email');
     }

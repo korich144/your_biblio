@@ -1,4 +1,4 @@
-import { openModal, closeModal, api } from './common.js';
+import { openModal, closeModal, api, clearError, showError } from './common.js';
 import { initAutocomplete, getAuthorsGenres } from './autocomplete.js';
 
 const MAIN_CONTAINER = document.getElementById('main-container');
@@ -190,12 +190,12 @@ async function initAutocompleteFields() {
         const { authors, genres } = await getAuthorsGenres();
         
         // Для формы создания
-        initField('create-author-input', authors);
-        initField('create-genre-input', genres);
+        initField('create-author', authors);
+        initField('create-genre', genres);
         
         // Для формы редактирования
-        initField('edit-author-input', authors);
-        initField('edit-genre-input', genres);
+        initField('edit-author', authors);
+        initField('edit-genre', genres);
         
     } catch (error) {
         console.error('Ошибка инициализации автодополнения:', error);
@@ -274,27 +274,34 @@ function openEditBookModal() {
     openModal('edit-book-modal');
 }
 
-function validateBookForm(formData) {
-    if (!formData.title.trim()) {
-        alert('Название книги обязательно');
-        return false;
+function validateBookForm(bookData, formType) {
+    let isValid = true;
+    
+    clearError(`${formType}-title`);
+    clearError(`${formType}-author`);
+    clearError(`${formType}-year`);
+    clearError(`${formType}-pages`);
+
+    if (!bookData.title.trim()) {
+        showError(`${formType}-title`, 'Название книги обязательно');
+        isValid = false;
     }
-    if (!formData.author.trim()) {
-        alert('Автор книги обязателен');
-        return false;
+    if (!bookData.author.trim()) {
+        showError(`${formType}-author`, 'Автор книги обязателен');
+        isValid = false;
     }
     
-    if (formData.year && (isNaN(formData.year) || formData.year < 0 || formData.year > new Date().getFullYear())) {
-        alert('Год издания должен быть положительным числом и не больше текущего года');
-        return false;
+    if (bookData.year && (isNaN(bookData.year) || bookData.year < 0 || bookData.year > new Date().getFullYear())) {
+        showError(`${formType}-year`, 'Некорректный год издания');
+        isValid = false;
     }
     
-    if (formData.pages && (isNaN(formData.pages) || formData.pages <= 0)) {
-        alert('Количество страниц должно быть положительным числом');
-        return false;
+    if (bookData.pages && (isNaN(bookData.pages) || bookData.pages <= 0)) {
+        showError(`${formType}-pages`, 'Некорректное количество страниц');
+        isValid = false;
     }
     
-    return true;
+    return isValid;
 }
 
 async function createNewBook() {
@@ -314,18 +321,18 @@ async function createNewBook() {
     }
     
     const bookData = {
-        title: document.querySelector('#create-book-modal input[placeholder="Введите название"]').value,
-        author: document.querySelector('#create-book-modal input[placeholder="Введите автора"]').value,
-        publisher: document.querySelector('#create-book-modal input[placeholder="Название издательства"]').value,
-        year: document.querySelector('#create-book-modal input[placeholder="Год выпуска"]').value,
-        pages: document.querySelector('#create-book-modal input[placeholder="Введите число"]').value,
-        genre: document.querySelector('#create-book-modal input[placeholder="Введите жанр"]').value,
-        description: document.querySelector('#create-book-modal textarea').value,
+        title: document.getElementById('create-title').value,
+        author: document.getElementById('create-author').value,
+        publisher: document.getElementById('create-publisher').value,
+        year: document.getElementById('create-year').value,
+        pages: document.getElementById('create-pages').value,
+        genre: document.getElementById('create-genre').value,
+        description: document.getElementById('create-description').value,
         image: coverUrl,
         is_public: false // Книга не публичная по умолчанию
     };
 
-    if (!validateBookForm(bookData)) {
+    if (!validateBookForm(bookData, 'create')) {
         return;
     }
     
@@ -345,16 +352,16 @@ async function saveBookChanges() {
     const bookId = currentBookId;
     
     const bookData = {
-        title: modal.querySelector('.book-title-input').value,
-        author: modal.querySelector('.book-author-input').value,
-        publisher: modal.querySelector('.publisher-input').value,
-        year: modal.querySelector('.year-input').value,
-        pages: modal.querySelector('.pages-input').value,
-        genre: modal.querySelector('.genre-input').value,
-        description: modal.querySelector('.description-textarea').value
+        title: document.getElementById('edit-title').value,
+        author: document.getElementById('edit-author').value,
+        publisher: document.getElementById('edit-publisher').value,
+        year: document.getElementById('edit-year').value,
+        pages: document.getElementById('edit-pages').value,
+        genre: document.getElementById('edit-genre').value,
+        description: document.getElementById('edit-description').value
     };
 
-    if (!validateBookForm(bookData)) {
+    if (!validateBookForm(bookData, 'edit')) {
         return;
     }
 

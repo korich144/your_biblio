@@ -78,35 +78,39 @@
             <div class="form-fields scrollable-fields">
                 <div class="form-group">
                     <label>Название книги</label>
-                    <input type="text" placeholder="Введите название">
+                    <input type="text" id="create-title" placeholder="Введите название">
+                    <div class="error-container" id="create-title-error" style="display: none"></div>
                 </div>
                 <div class="form-group">
                     <label>Автор</label>
                     <div class="autocomplete">
-                        <input type="text" id="create-author-input" placeholder="Введите автора">
+                        <input type="text" id="create-author" placeholder="Введите автора">
                     </div>
+                    <div class="error-container" id="create-author-error" style="display: none"></div>
                 </div>
                 <div class="form-group">
                     <label>Издательство</label>
-                    <input type="text" placeholder="Название издательства">
+                    <input type="text" id="create-publisher" placeholder="Название издательства">
                 </div>
                 <div class="form-group">
                     <label>Год издания</label>
-                    <input type="number" placeholder="Год выпуска">
+                    <input type="number" id="create-year" placeholder="Год выпуска">
+                    <div class="error-container" id="create-year-error" style="display: none"></div>
                 </div>
                 <div class="form-group">
                     <label>Количество страниц</label>
-                    <input type="number" placeholder="Введите число">
+                    <input type="number" id="create-pages" placeholder="Введите число">
+                    <div class="error-container" id="create-pages-error" style="display: none"></div>
                 </div>
                 <div class="form-group">
                     <label>Жанр</label>
                     <div class="autocomplete">
-                        <input type="text" id="create-genre-input" placeholder="Введите жанр">
+                        <input type="text" id="create-genre" placeholder="Введите жанр">
                     </div>
                 </div>
                 <div class="form-group">
                     <label>Описание</label>
-                    <textarea placeholder="Введите описание книги" rows="4"></textarea>
+                    <textarea id="create-description" placeholder="Введите описание книги" rows="4"></textarea>
                 </div>
             </div>
         </div>
@@ -190,35 +194,39 @@
             <div class="form-fields scrollable-fields">
                 <div class="form-group">
                     <label>Название книги</label>
-                    <input type="text" placeholder="Введите название" class="book-title-input">
+                    <input type="text" id="edit-title" placeholder="Введите название" class="book-title-input">
+                    <div class="error-container" id="edit-title-error" style="display: none"></div>
                 </div>
                 <div class="form-group">
                     <label>Автор</label>
                     <div class="autocomplete">
-                        <input type="text" placeholder="Автор" class="book-author-input" id="edit-author-input">
+                        <input type="text" id="edit-author" placeholder="Автор" class="book-author-input">
                     </div>
+                    <div class="error-container" id="edit-author-error" style="display: none"></div>
                 </div>
                 <div class="form-group">
                     <label>Издательство</label>
-                    <input type="text" placeholder="Название издательства" class="publisher-input">
+                    <input type="text" id="edit-publisher" placeholder="Название издательства" class="publisher-input">
                 </div>
                 <div class="form-group">
                     <label>Год издания</label>
-                    <input type="number" placeholder="Год выпуска" class="year-input">
+                    <input type="number" id="edit-year" placeholder="Год выпуска" class="year-input">
+                    <div class="error-container" id="edit-year-error" style="display: none"></div>
                 </div>
                 <div class="form-group">
                     <label>Количество страниц</label>
-                    <input type="number" placeholder="Введите число" class="pages-input">
+                    <input type="number" id="edit-pages" placeholder="Введите число" class="pages-input">
+                    <div class="error-container" id="edit-pages-error" style="display: none"></div>
                 </div>
                 <div class="form-group">
                     <label>Жанр</label>
                     <div class="autocomplete">
-                        <input type="text" id="edit-genre-input" class="genre-input" placeholder="Введите жанр">
+                        <input type="text" id="edit-genre" class="genre-input" placeholder="Введите жанр">
                     </div>
                 </div>
                 <div class="form-group">
                     <label>Описание</label>
-                    <textarea placeholder="Введите описание книги" rows="4" class="description-textarea"></textarea>
+                    <textarea id="edit-description" placeholder="Введите описание книги" rows="4" class="description-textarea"></textarea>
                 </div>
             </div>
         </div>

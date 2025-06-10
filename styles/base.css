@@ -222,6 +222,17 @@ footer {
     background: rgba(169, 135, 70, 0.3);
 }
 
+.error-container {
+    color: #ff4d4d;
+    font-size: 0.8rem;
+    margin-top: 5px;
+    min-height: 1em;
+}
+
+input.invalid, select.invalid, textarea.invalid {
+    border-color: #ff4d4d;
+}
+
 /* Адаптивность для маленьких экранов */
 @media (max-width: 1100px) {
     header {

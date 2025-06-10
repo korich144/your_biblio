@@ -19,7 +19,6 @@ session_start();
     <main id="main-container"></main>
     <div id="footer-container"></div>
 
-    <!-- После footer-container -->
     <div class="modal-overlay" id="login-modal">
         <div class="modal">
             <div class="modal-header">
@@ -31,10 +30,12 @@ session_start();
                     <div class="form-group">
                         <label>Логин</label>
                         <input type="text" id="login-username" placeholder="Введите логин">
+                        <div class="error-container" id="login-username-error" style="display: none"></div>
                     </div>
                     <div class="form-group">
                         <label>Пароль</label>
                         <input type="password" id="login-password" placeholder="Введите пароль">
+                        <div class="error-container" id="login-password-error" style="display: none"></div>
                     </div>
                     <div class="form-group remember">
                         <input type="checkbox" id="remember-me">
@@ -59,22 +60,27 @@ session_start();
                     <div class="form-group">
                         <label>Логин</label>
                         <input type="text" id="register-username" placeholder="Придумайте логин">
+                        <div class="error-container" id="register-username-error" style="display: none"></div>
                     </div>
                     <div class="form-group">
                         <label>Имя</label>
                         <input type="text" id="register-name" placeholder="Ваше имя">
+                        <div class="error-container" id="register-name-error" style="display: none"></div>
                     </div>
                     <div class="form-group">
                         <label>Пароль</label>
                         <input type="password" id="register-password" placeholder="Придумайте пароль">
+                        <div class="error-container" id="register-password-error" style="display: none"></div>
                     </div>
                     <div class="form-group">
                         <label>Подтверждение пароля</label>
                         <input type="password" id="register-confirm" placeholder="Повторите пароль">
+                        <div class="error-container" id="register-confirm-error" style="display: none"></div>
                     </div>
                     <div class="form-group">
                         <label>Email</label>
                         <input type="email" id="register-email" placeholder="Ваш email">
+                        <div class="error-container" id="register-email-error" style="display: none"></div>
                     </div>
                 </div>
             </div>
