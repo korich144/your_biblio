@@ -4,11 +4,11 @@ import { initAutocomplete, getAuthorsGenres } from './autocomplete.js';
 const MAIN_CONTAINER = document.getElementById('main-container');
 
 // Инициализация при загрузке страницы
-export function initCatalog() {
+export function initCatalog(signal, isLibrary) {
     if (document.querySelector('.books')) {
         loadBooks();
-        initFilters();
-        initSearch();
+        initFilters(signal);
+        initSearch(signal);
     }
 
     const isCatalogPage = window.location.hash.includes('/catalog');
@@ -16,17 +16,17 @@ export function initCatalog() {
     // Используем делегирование событий для динамических элементов
     document.addEventListener('click', function(e) {
         // Обработка кнопки создания книги
-        if (e.target.closest('#create-book-btn') && !isCatalogPage) {
+        if (e.target.closest('#create-book-btn') && isLibrary) {
             openModal('create-book-modal');
         }
         
         // Обработка кнопки редактирования
-        if (e.target.closest('#edit-book') && !isCatalogPage) {
+        if (e.target.closest('#edit-book') && isLibrary) {
             openEditBookModal();
         }
         
         // Обработка кнопки удаления
-        if (e.target.closest('#delete-book') && !isCatalogPage) {
+        if (e.target.closest('#delete-book') && isLibrary) {
             if (confirm('Вы уверены, что хотите удалить эту книгу?')) {
                 deleteBook(currentBookId);
                 closeModal('book-details-modal');
@@ -34,43 +34,35 @@ export function initCatalog() {
         }
         
         // Обработка отмены редактирования
-        if (e.target.closest('#cancel-edit') && !isCatalogPage) {
+        if (e.target.closest('#cancel-edit') && isLibrary) {
             closeModal('edit-book-modal');
             openModal('book-details-modal');
         }
 
-        if (e.target.closest('#save-changes') && !isCatalogPage) {
+        if (e.target.closest('#save-changes') && isLibrary) {
             saveBookChanges();
         }
 
-        if (e.target.closest('#create-book-submit') && !isCatalogPage) {
+        if (e.target.closest('#create-book-submit') && isLibrary) {
             createNewBook();
             openModal('create-book-modal');
         }
 
-        if (e.target.closest('#add-to-library') && isCatalogPage) {
+        if (e.target.closest('#send-to-catalog') && isLibrary) {
+            sendToCatalog(currentBookId);
+            closeModal('book-details-modal');
+        }
+
+        if (e.target.closest('#add-to-library') && !isLibrary) {
             addToLibraryHandler();
             closeModal('book-details-modal');
         }
-    });
-
-    document.getElementById('send-to-catalog')?.addEventListener('click', async function() {
-        try {
-            await api.updateBook(currentBookId, { is_public: true });
-            const book = booksData.find(b => b.id == currentBookId);
-            if (book) book.is_public = true;
-            alert('Книга опубликована в каталоге!');
-            closeModal('book-details-modal');
-        } catch (error) {
-            alert('Ошибка публикации книги: ' + error.message);
-        }
-    });
-
+    }, { signal });
     // Инициализация Drag and Drop
     initDragAndDrop('drop-area', 'preview-image');
     initDragAndDrop('edit-drop-area', 'edit-preview-image');
 
-    MAIN_CONTAINER.addEventListener('click', handleBookClick);
+    MAIN_CONTAINER.addEventListener('click', handleBookClick, { signal });
     initAutocompleteFields();
 };
 
@@ -325,6 +317,13 @@ async function saveBookChanges() {
     }
 }
 
+async function sendToCatalog(currentBookId) {
+    await api.updateBook(currentBookId, { is_public: true });
+    const book = booksData.find(b => b.id == currentBookId);
+    if (book) book.is_public = true;
+    alert('Книга опубликована в каталоге!');
+}
+
 async function addToLibraryHandler() {
     try {
         await api.addToLibrary(currentBookId);
@@ -401,7 +400,7 @@ function getCurrentFilters() {
 }
 
 // Инициализация фильтров
-async function initFilters() {
+async function initFilters(signal) {
     try {
         const filters = await api.getFilters();
         
@@ -431,7 +430,7 @@ async function initFilters() {
             filter.addEventListener('click', function() {
                 dropdown.style.display = 
                     dropdown.style.display === 'block' ? 'none' : 'block';
-            });
+            }, { signal });
             
             dropdown.querySelectorAll('li').forEach(li => {
                 li.addEventListener('click', function() {
@@ -440,7 +439,7 @@ async function initFilters() {
                     loadBooks();
                     document.querySelectorAll('.dropdown').forEach(dd => dd.style.display = 'none');
                     console.log("a");
-                });
+                }, { signal });
             });
         });
 
@@ -450,7 +449,7 @@ async function initFilters() {
                     dd.style.display = 'none';
                 });
             }
-        });
+        }, { signal });
         
     } catch (error) {
         console.error('Ошибка загрузки фильтров:', error);
@@ -458,7 +457,7 @@ async function initFilters() {
 }
 
 // Инициализация поиска
-function initSearch() {
+function initSearch(signal) {
     const searchInput = document.querySelector('.search input');
     const clearButton = document.querySelector('.search .clear');
     const searchElement = document.querySelector('.search');
@@ -473,36 +472,36 @@ function initSearch() {
             clearButton.style.display = 'none';
             searchElement.classList.remove('has-text');
         }
-    });
+    }, { signal });
 
     clearButton.addEventListener('click', () => {
         searchInput.value = '';
         clearButton.style.display = 'none';
         searchElement.classList.remove('has-text');
         searchInput.focus();
-    });
+    }, { signal });
 
     searchInput.addEventListener('focus', () => {
         searchElement.classList.add('focused');
-    });
+    }, { signal });
 
     searchInput.addEventListener('blur', () => {
         if (!searchInput.value.trim()) {
             searchElement.classList.remove('focused');
         }
-    });
+    }, { signal });
 
     document.querySelector('.search-btn')?.addEventListener('click', () => {
         currentPage = 1;
         loadBooks();
-    });
+    }, { signal });
     
     document.querySelector('.search input')?.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {
             currentPage = 1;
             loadBooks();
         }
-    });
+    }, { signal });
 }
 
 // Drag and Drop для загрузки изображений
@@ -527,18 +526,18 @@ function initDragAndDrop(dropAreaId, previewId) {
     });
 
     ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-        dropArea.addEventListener(eventName, preventDefaults, false);
+        dropArea.addEventListener(eventName, preventDefaults);
     });
 
     ['dragenter', 'dragover'].forEach(eventName => {
-        dropArea.addEventListener(eventName, () => highlight(dropArea), false);
+        dropArea.addEventListener(eventName, () => highlight(dropArea));
     });
     
     ['dragleave', 'drop'].forEach(eventName => {
-        dropArea.addEventListener(eventName, () => unhighlight(dropArea), false);
+        dropArea.addEventListener(eventName, () => unhighlight(dropArea));
     });
 
-    dropArea.addEventListener('drop', handleDrop, false);
+    dropArea.addEventListener('drop', handleDrop);
 
     function preventDefaults(e) {
         e.preventDefault();

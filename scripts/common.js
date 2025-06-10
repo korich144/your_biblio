@@ -121,53 +121,62 @@ export const api = {
     }
 };
 
-window.initAuth = function() {
+window.initAuth = function(signal) {
     const user = JSON.parse(localStorage.getItem('user'));
     updateUI(user);
     
     // Обработчики кнопок
-    document.getElementById('login-btn')?.addEventListener('click', () => openModal('login-modal'));
-    document.getElementById('register-btn')?.addEventListener('click', () => openModal('register-modal'));
-    document.getElementById('home-register-btn')?.addEventListener('click', () => openModal('register-modal'));
-    
-    // Заглушки для авторизации
-    document.getElementById('login-submit')?.addEventListener('click', loginUser);
-    document.getElementById('register-submit')?.addEventListener('click', registerUser);
+    document.getElementById('login-btn')?.addEventListener('click', () => openModal('login-modal'), { signal });
+    document.getElementById('register-btn')?.addEventListener('click', () => openModal('register-modal'), { signal });
+    document.getElementById('home-register-btn')?.addEventListener('click', () => openModal('register-modal'), { signal });
+
+    // Обработчики форм регистрации и входа
+    document.getElementById('login-submit')?.addEventListener('click', loginUser, { signal });
+    document.getElementById('register-submit')?.addEventListener('click', registerUser, { signal });
+
+    // Меню профиля
     document.getElementById('user-profile')?.addEventListener('click', function(e) {
         e.stopPropagation();
         const menu = document.getElementById('user-menu');
         menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
-    });
-    document.getElementById('logout-btn')?.addEventListener('click', logoutUser);
+    }, { signal });
+
+    // Выход и переход в профиль
+    document.getElementById('logout-btn')?.addEventListener('click', logoutUser, { signal });
     document.getElementById('profile-btn')?.addEventListener('click', function() {
         window.location.hash = '#/profile';
         document.getElementById('user-menu').style.display = 'none';
-    });
+    }, { signal });
 
+    // Закрытие меню при щелчке вне области
     document.addEventListener('click', function(e) {
         const menu = document.getElementById('user-menu');
         if (menu && !e.target.closest('#user-menu') && !e.target.closest('#user-profile')) {
             menu.style.display = 'none';
         }
-    });
+    }, { signal });
+
+    // Регистрация при нажатии кнопки на главной странице
     document.addEventListener('click', function(e) {
         if (e.target.closest('.home-register-btn')) {
             openModal('register-modal');
         }
-    });
+    }, { signal });
+
+    // Переход в профиль
     document.getElementById('user-profile')?.addEventListener('click', function(e) {
-        if (e.target.closest('#profile-btn') || e.target.closest('#user-avatar')) {
+        if (e.target.closest('#profile-btn')) {
             window.location.hash = '#/profile';
         }
-    });
-}
+    }, { signal });
 
-document.addEventListener('click', e => {
-    if (e.target.matches('nav a')) {
-        e.preventDefault();
-        window.location.hash = e.target.getAttribute('href');
-    }
-});
+    document.addEventListener('click', e => {
+        if (e.target.matches('nav a')) {
+            e.preventDefault();
+            window.location.hash = e.target.getAttribute('href');
+        }
+    }, { signal });
+}
 
 export function openModal(id) {
     const modal = document.getElementById(id);
@@ -266,7 +275,7 @@ window.addEventListener('DOMContentLoaded', () => {
 document.getElementById('user-profile')?.addEventListener('click', function() {
     const menu = document.getElementById('user-menu');
     menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
-});
+}, { signal });
 
 function logoutUser() {
     localStorage.removeItem('user');
@@ -275,7 +284,7 @@ function logoutUser() {
     window.location.hash = '#/';
 }
 
-export async function initProfile() {
+export async function initProfile(signal) {
     try {
         const user = await api.getProfile();
         localStorage.setItem('user', JSON.stringify(user));
@@ -309,7 +318,7 @@ export async function initProfile() {
                 if (input.tagName === 'SELECT') {
                     input.value = user.gender || '';
                 }
-            });
+            }, { signal });
         });
 
         document.querySelectorAll('.cancel-icon').forEach(icon => {
@@ -324,7 +333,7 @@ export async function initProfile() {
                 display.style.display = 'inline';
                 editIcon.style.display = 'block';
                 controls.style.display = 'none';
-            });
+            }, { signal });
         });
 
         document.querySelectorAll('.save-icon').forEach(icon => {
@@ -402,7 +411,7 @@ export async function initProfile() {
                 } catch (error) {
                     alert('Ошибка сохранения: ' + error.message);
                 }
-            });
+            }, { signal });
         });
 
         const visibilityBtn = document.querySelector('.visibility');
@@ -420,7 +429,7 @@ export async function initProfile() {
                 icon.classList.remove('fa-eye');
                 icon.classList.add('fa-eye-slash');
             }
-            });
+            }, { signal });
         }
         
         if (user.avatar) {
@@ -430,7 +439,7 @@ export async function initProfile() {
         // Обработчики
         document.getElementById('change-avatar-btn')?.addEventListener('click', () => {
             document.getElementById('profile-avatar-input').click();
-        });
+        }, { signal });
 
         document.getElementById('profile-avatar-input').addEventListener('change', async (e) => {
             if (e.target.files[0]) {
@@ -453,7 +462,7 @@ export async function initProfile() {
                     alert('Ошибка загрузки аватара: ' + error.message);
                 }
             }
-        });
+        }, { signal });
 
         document.getElementById('change-password-btn').addEventListener('click', async () => {
             const oldPassword = prompt('Введите старый пароль:');
@@ -467,7 +476,7 @@ export async function initProfile() {
                     alert(error.message);
                 }
             }
-        });
+        }, { signal });
 
         document.getElementById('delete-account-btn').addEventListener('click', async () => {
             if (confirm('Вы уверены, что хотите удалить аккаунт? Это действие нельзя отменить.')) {
@@ -479,14 +488,14 @@ export async function initProfile() {
                     alert(error.message);
                 }
             }
-        });
+        }, { signal });
 
-        document.getElementById('logout-profile-btn')?.addEventListener('click', logoutUser);
-        document.getElementById('logout-btn')?.addEventListener('click', logoutUser);
+        document.getElementById('logout-profile-btn')?.addEventListener('click', logoutUser, { signal });
+        document.getElementById('logout-btn')?.addEventListener('click', logoutUser, { signal });
         document.getElementById('profile-btn')?.addEventListener('click', function() {
             window.location.hash = '#/profile';
             document.getElementById('user-menu').style.display = 'none';
-        });
+        }, { signal });
 
         // Обработчики для сохранения данных
         const saveField = (id, key) => {
@@ -496,7 +505,7 @@ export async function initProfile() {
                 if (key === 'name') {
                     document.getElementById('username-display').textContent = user.name;
                 }
-            });
+            }, { signal });
         };
 
         saveField('profile-username', 'name');

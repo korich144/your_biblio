@@ -5,9 +5,20 @@ const routes = {
     '/profile': 'profile'
 };
 
+let pageController = new AbortController();
+
 async function loadPage(page) {
     const mainContainer = document.getElementById('main-container');
     mainContainer.innerHTML = '';
+
+    pageController.abort();
+    pageController = new AbortController();
+    const signal = pageController.signal;
+
+    signal.addEventListener('abort', () => {
+        clearInterval(intervalId);
+        clearTimeout(timeoutId);
+    });
 
     try {
         switch(page) {
@@ -22,7 +33,7 @@ async function loadPage(page) {
                 // Инициализация только после загрузки HTML
                 setTimeout(async () => {
                     const { initCatalog } = await import('./catalog.js');
-                    initCatalog();
+                    initCatalog(signal, page === 'my-library');
                 }, 100);
                 break;
             case 'profile':
@@ -31,7 +42,7 @@ async function loadPage(page) {
                 // Инициализация профиля
                 setTimeout(async () => {
                     const { initProfile } = await import('./common.js');
-                    initProfile();
+                    initProfile(signal);
                 }, 100);
                 break;
         }
