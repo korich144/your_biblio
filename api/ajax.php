@@ -356,10 +356,10 @@ function handleDeleteAccount($db) {
 }
 
 function validateBookData($data) {
-    if (empty($data['title'])) {
+    if (isset($data['title']) && empty($data['title'])) {
         throw new Exception('Название книги обязательно');
     }
-    if (empty($data['author'])) {
+    if (isset($data['author']) && empty($data['author'])) {
         throw new Exception('Автор книги обязателен');
     }
     
