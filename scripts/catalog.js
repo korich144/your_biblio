@@ -69,9 +69,6 @@ export function initCatalog() {
     // Инициализация Drag and Drop
     initDragAndDrop('drop-area', 'preview-image');
     initDragAndDrop('edit-drop-area', 'edit-preview-image');
-    setTimeout(() => {
-        initDragAndDrop('edit-drop-area', 'edit-preview-image');
-    }, 0);
 
     MAIN_CONTAINER.addEventListener('click', handleBookClick);
     initAutocompleteFields();
@@ -128,7 +125,7 @@ function fillBookDetailsModal(book) {
     if (descriptionEl) descriptionEl.textContent = book.description || 'Описание отсутствует.';
     
     // Установка обложки
-    const img = modal.querySelector('.preview-container img');
+    const img = modal.querySelector('#details-preview-image');
     if (img) {
         img.src = book.image;
         img.alt = book.title;
@@ -565,6 +562,16 @@ function initDragAndDrop(dropAreaId, previewId) {
     const uploadContent = dropArea.querySelector('.content');
     const imagePlaceholder = dropArea.querySelector('.image-placeholder');
 
+    // Добавляем обработчик клика на всю область
+    dropArea.addEventListener('click', function(e) {
+        console.log(e.target);
+        // Клик по самой области загрузки
+        if (e.target === dropArea || e.target === previewImage || 
+            e.target === previewContainer || e.target === imagePlaceholder || uploadContent) {
+            fileInput.click();
+        }
+    });
+
     ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
         dropArea.addEventListener(eventName, preventDefaults, false);
     });
@@ -627,5 +634,14 @@ function initDragAndDrop(dropAreaId, previewId) {
             }
         }
     }
+    
+    // Инициализация существующего изображения
+    if (previewImage && previewImage.src && previewImage.src !== window.location.href) {
+        if (previewContainer) previewContainer.style.display = 'flex';
+        if (uploadContent) uploadContent.style.display = 'none';
+        if (imagePlaceholder) imagePlaceholder.style.display = 'none';
+        dropArea.classList.add('has-image');
+    }
+    
     dropArea.dataset.initialized = "true";
 }
