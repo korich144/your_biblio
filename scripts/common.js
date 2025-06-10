@@ -43,8 +43,8 @@ export async function apiRequest(action, data = {}, method = 'POST') {
 }
 
 export const api = {
-    async login(username, password) {
-        return apiRequest('login', { username, password });
+    async login(username, password, remember = false) {
+        return apiRequest('login', { username, password, remember });
     },
     
     async register(userData) {
@@ -122,6 +122,12 @@ export const api = {
 };
 
 window.initAuth = function(signal) {
+    const rememberState = getRememberMeState();
+    const rememberCheckbox = document.getElementById('remember-me');
+    
+    if (rememberCheckbox) {
+        rememberCheckbox.checked = rememberState;
+    }
     const user = JSON.parse(localStorage.getItem('user'));
     updateUI(user);
     
@@ -255,10 +261,12 @@ async function loginUser() {
     
     if (!isValid) return;
 
+    const remember = document.getElementById('remember-me').checked;
     try {
         const user = await api.login(username, password);
         
         localStorage.setItem('user', JSON.stringify(user));
+        saveRememberMeState(remember);
         updateUI(user);
         closeModal('login-modal');
     } catch (error) {
@@ -324,6 +332,14 @@ async function registerUser() {
 function isValidEmail(email) {
     const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return re.test(email.toLowerCase());
+}
+
+function saveRememberMeState(remember) {
+    localStorage.setItem('rememberMe', remember ? 'true' : 'false');
+}
+
+function getRememberMeState() {
+    return localStorage.getItem('rememberMe') === 'true';
 }
 
 export function updateUI(user) {

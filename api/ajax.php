@@ -22,7 +22,8 @@ if ($action === 'upload_avatar' || $action === 'upload_cover') {
 try {
     switch ($action) {
         case 'login':
-            handleLogin($db, $input);
+            $remember = $input['remember'] ?? false;
+            handleLogin($db, array_merge($input, ['remember' => $remember]));
             break;
             
         case 'register':
@@ -127,12 +128,25 @@ function handleLogin($db, $data) {
     );
     
     $user = pg_fetch_assoc($result);
-    if (!$user) {
-        throw new Exception('Invalid credentials');
+    if ($user) {
+        $_SESSION['user_id'] = $user['id'];
+        
+        if ($data['remember'] ?? false) {
+            $lifetime = 60 * 60 * 24 * 30;
+            $params = session_get_cookie_params();
+            setcookie(
+                session_name(),
+                session_id(),
+                time() + $lifetime,
+                $params["path"],
+                $params["domain"],
+                $params["secure"],
+                $params["httponly"]
+            );
+        }
+        
+        echo json_encode($user);
     }
-    
-    $_SESSION['user_id'] = $user['id'];
-    echo json_encode($user);
 }
 
 function handleRegister($db, $data) {
@@ -182,6 +196,21 @@ function handleRegister($db, $data) {
 }
 
 function handleLogout() {
+    $_SESSION = array();
+    
+    if (ini_get("session.use_cookies")) {
+        $params = session_get_cookie_params();
+        setcookie(
+            session_name(),
+            '',
+            time() - 42000,
+            $params["path"],
+            $params["domain"],
+            $params["secure"],
+            $params["httponly"]
+        );
+    }
+    
     session_destroy();
     echo json_encode(['success' => true]);
 }
