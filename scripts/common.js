@@ -596,3 +596,12 @@ export async function initProfile(signal) {
         alert('Не удалось загрузить профиль');
     }
 }
+
+export function debounce(func, wait) {
+    let timeout;
+    return function(...args) {
+        const context = this;
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func.apply(context, args), wait);
+    };
+}

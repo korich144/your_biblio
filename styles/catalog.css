@@ -90,13 +90,13 @@
 }
 
 .search {
+    position: relative;
     display: flex;
     align-items: center;
     flex: 0 1 auto;
     min-width: 100px;
     max-width: 300px;
     border-radius: 20px;
-    overflow: hidden;
     background-color: #F4EDE1;
     transition: all 0.3s ease;
     margin: 0 10px;
@@ -146,8 +146,37 @@
     color: #E2D8C6;
     padding: 8px 12px;
     border: none;
+    border-radius: 0 20px 20px 0;
     cursor: pointer;
     font-size: 14px;
+}
+
+.search-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: rgba(226, 216, 198, 0.8);
+    border-radius: 0 0 20px 20px;
+    list-style: none;
+    margin-top: 5px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    animation: dropdownFade 0.2s ease;
+    backdrop-filter: blur(10px);
+}
+
+.search-dropdown .autocomplete-option {
+    padding: 8px 15px;
+    cursor: pointer;
+    font-size: 14px;
+    color: #524230;
+    transition: background 0.2s;
+}
+
+.search.active {
+    overflow: visible;
+    z-index: 1002;
 }
 
 .actions {

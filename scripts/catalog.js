@@ -1,5 +1,5 @@
 import { openModal, closeModal, api, clearError, showError } from './common.js';
-import { initAutocomplete, getAuthorsGenres } from './autocomplete.js';
+import { initAutocomplete, initSearchAutocomplete, getAuthorsGenres } from './autocomplete.js';
 
 const MAIN_CONTAINER = document.getElementById('main-container');
 
@@ -499,6 +499,8 @@ function initSearch(signal) {
     const searchElement = document.querySelector('.search');
     
     if (!searchInput || !clearButton) return;
+
+    initSearchAutocomplete(searchInput);
     
     searchInput.addEventListener('input', () => {
         if (searchInput.value.trim()) {

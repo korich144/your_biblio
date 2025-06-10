@@ -72,6 +72,10 @@ try {
         case 'get_filters':
             handleGetFilters($db);
             break;
+
+        case 'search_suggestions':
+            handleSearchSuggestions($db, $_GET['query']);
+            break;
             
         default:
             throw new Exception('Invalid action');
@@ -661,4 +665,21 @@ function handleGetFilters($db) {
     $filters['years'] = json_decode($filters['years'], true) ?: [];
 
     echo json_encode($filters);
+}
+
+function handleSearchSuggestions($db, $query) {
+    $query = pg_escape_string($db, $query);
+    $result = pg_query($db, 
+        "SELECT title FROM books 
+         WHERE title ILIKE '%$query%'
+         GROUP BY title
+         ORDER BY COUNT(*) DESC
+         LIMIT 5");
+    
+    $suggestions = [];
+    while ($row = pg_fetch_assoc($result)) {
+        $suggestions[] = $row['title'];
+    }
+    
+    echo json_encode($suggestions);
 }
