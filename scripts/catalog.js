@@ -252,18 +252,6 @@ function renderPagination(total, perPage, current) {
     pagination.appendChild(createButton('>>', totalPages, current === totalPages));
 }
 
-// Настройка обработчиков событий для книг
-function setupBookEvents() {
-    document.querySelector('.books')?.addEventListener('click', function(e) {
-        const card = e.target.closest('.book-card');
-        if (card) {
-            const bookId = card.dataset.id;
-            openBookDetails(bookId);
-        }
-    });
-}
-
-// Открытие деталей книги
 function openBookDetails(bookId) {
     const book = booksData.find(b => b.id == bookId);
     if (!book) return;
@@ -294,27 +282,6 @@ function openEditBookModal() {
     openModal('edit-book-modal');
 }
 
-async function initAutocompleteForEditForm() {
-    try {
-        const { authors, genres } = await getAuthorsGenres();
-        
-        // Для автора (если нужно)
-        const authorInput = document.getElementById('edit-author-input');
-        if (authorInput) {
-            initAutocomplete(authorInput, authors);
-        }
-        
-        // Для жанра
-        const genreInput = document.getElementById('edit-genre-input');
-        if (genreInput) {
-            initAutocomplete(genreInput, genres);
-        }
-    } catch (error) {
-        console.error('Ошибка инициализации автодополнения для редактирования:', error);
-    }
-}
-
-// Сохранение изменений
 async function saveBookChanges() {
     const modal = document.getElementById('edit-book-modal');
     const bookId = currentBookId;
@@ -416,20 +383,6 @@ async function deleteBook(bookId) {
         alert('Книга успешно удалена');
     } catch (error) {
         alert(error.message);
-    }
-}
-
-function addToLibrary(bookId) {
-    const book = booksData.find(b => b.id == bookId);
-    if (!book) return;
-    
-    let myLibrary = JSON.parse(localStorage.getItem('myLibrary')) || [];
-    if (!myLibrary.some(b => b.id === book.id)) {
-        myLibrary.push(book);
-        localStorage.setItem('myLibrary', JSON.stringify(myLibrary));
-        alert('Книга добавлена в вашу библиотеку!');
-    } else {
-        alert('Эта книга уже есть в вашей библиотеке!');
     }
 }
 

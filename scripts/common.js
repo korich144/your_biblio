@@ -121,13 +121,6 @@ export const api = {
     }
 };
 
-function loginSuccess(user) { // Новая функция
-    localStorage.setItem('user', JSON.stringify(user));
-    updateUI(user);
-    closeModal('login-modal');
-}
-
-// Управление состоянием авторизации
 window.initAuth = function() {
     const user = JSON.parse(localStorage.getItem('user'));
     updateUI(user);
@@ -169,7 +162,6 @@ window.initAuth = function() {
     });
 }
 
-// Обновим обработчики навигации
 document.addEventListener('click', e => {
     if (e.target.matches('nav a')) {
         e.preventDefault();
@@ -177,7 +169,6 @@ document.addEventListener('click', e => {
     }
 });
 
-// Добавляем функции для работы с модальными окнами
 export function openModal(id) {
     const modal = document.getElementById(id);
     if (modal) {
@@ -194,7 +185,6 @@ export function closeModal(id) {
     }
 }
 
-// Обработчики для закрытия модальных окон
 document.addEventListener('click', e => {
     if (e.target.classList.contains('modal-close') || 
         e.target.classList.contains('modal-overlay')) {
@@ -246,20 +236,6 @@ async function registerUser() {
     }
 }
 
-async function getAuthorsGenres() {
-    try {
-        const response = await fetch('api/ajax.php?action=get_filters');
-        const data = await response.json();
-        return {
-            authors: data.authors || [],
-            genres: data.genres || []
-        };
-    } catch (error) {
-        console.error('Ошибка загрузки фильтров:', error);
-        return { authors: [], genres: [] };
-    }
-}
-
 export function updateUI(user) {
     const isLoggedIn = !!user;
     const myLibraryLink = document.getElementById('my-library-link');
@@ -281,7 +257,6 @@ export function updateUI(user) {
     }
 }
 
-// Обновим инициализацию в конце файла
 window.addEventListener('DOMContentLoaded', () => {
     loadHeader();
     loadFooter();
@@ -293,7 +268,6 @@ document.getElementById('user-profile')?.addEventListener('click', function() {
     menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
 });
 
-// Функция выхода
 function logoutUser() {
     localStorage.removeItem('user');
     localStorage.removeItem('remember');
