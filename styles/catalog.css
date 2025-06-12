@@ -69,6 +69,7 @@
     z-index: 1000;
     animation: dropdownFade 0.2s ease;
     backdrop-filter: blur(10px);
+    max-height: 30vh;
 }
 
 .dropdown.open {
@@ -366,9 +367,10 @@
 }
 
 .scrollable-fields {
-    max-height: 60vh;
     overflow-y: auto;
+    overflow-x: hidden;
     padding-right: 10px;
+    /*! max-height: min-content; */
 }
 
 /* Для Firefox */
@@ -451,7 +453,7 @@
 }
 
 .image-placeholder {
-    padding-top: 133%;
+    padding-top: 55vh;
 }
 
 @media (max-width: 900px) {
@@ -474,6 +476,7 @@
     flex: 1;
     display: flex;
     flex-direction: column;
+    max-height: 55vh;
 }
 
 .form-group {
