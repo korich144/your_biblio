@@ -4,3 +4,4 @@ your_biblio.txt
 .env
 *.log
 TODO
+.vscode
