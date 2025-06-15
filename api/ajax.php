@@ -146,6 +146,8 @@ function handleLogin($db, $data) {
         }
         
         echo json_encode($user);
+    } else {
+        throw new Exception('Неверный логин или пароль');
     }
 }
 
