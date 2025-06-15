@@ -92,20 +92,22 @@ async function loadBooks() {
         booksData = response.books;
         renderBooks(booksData);
         renderPagination(response.total, response.perPage, response.page);
-
-        const urlParams = new URLSearchParams(window.location.search);
-        const bookId = urlParams.get('bookId');
+   
+        const bookId = window.currentQuery ? window.currentQuery.get('bookId') : null;
         
         if (bookId) {
+            // Пробуем найти книгу в загруженных
             const book = booksData.find(b => b.id == bookId);
             if (book) {
                 currentBookId = bookId;
                 fillBookDetailsModal(book);
                 openModal('book-details-modal');
             } else {
+                // Если не нашли, загружаем отдельно
                 await openBookById(bookId);
             }
             
+            // Очищаем параметр URL
             const cleanHash = window.location.hash.split('?')[0];
             history.replaceState(null, '', cleanHash);
         }
@@ -345,6 +347,7 @@ function shareBook(bookId) {
 
 async function openBookById(bookId) {
     try {
+        console.log(bookId);
         const book = await api.getBook(bookId);
         currentBookId = bookId;
         fillBookDetailsModal(book);

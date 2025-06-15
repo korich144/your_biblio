@@ -12,7 +12,9 @@ window.loadFooter = async function() {
 }
 
 window.setActiveLink = function() {
-    const path = window.location.hash.slice(1) || '/';
+    const fullHash = window.location.hash.slice(1) || '/';
+    
+    const [path, query] = fullHash.split('?');
     document.querySelectorAll('nav a').forEach(link => {
         link.classList.toggle('active', link.getAttribute('href') === `#${path}`);
     });
@@ -59,7 +61,7 @@ export const api = {
     },
 
     async getBook(bookId) {
-        return apiRequest('get_book', { id: bookId }, 'GET');
+        return apiRequest('get_book', { id: bookId });
     },
     
     async addBook(bookData) {

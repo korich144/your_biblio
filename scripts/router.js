@@ -63,10 +63,14 @@ function loadScript(src) {
 }
 
 function onRouteChange() {
-    const path = window.location.hash.slice(1) || '/';
+    const fullHash = window.location.hash.slice(1) || '/';
+    
+    const [path, query] = fullHash.split('?');
     const page = routes[path] || 'home';
     loadPage(page);
-    setActiveLink(); // Обновляем активные ссылки
+    
+    window.currentQuery = new URLSearchParams(query);
+    setActiveLink();
 }
 
 window.addEventListener('hashchange', onRouteChange);
