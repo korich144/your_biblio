@@ -57,6 +57,10 @@ export function initCatalog(signal, isLibrary) {
             addToLibraryHandler();
             closeModal('book-details-modal');
         }
+
+        if (e.target.closest('#share-book')) {
+            shareBook(currentBookId);
+        }
     }, { signal });
     // Инициализация Drag and Drop
     initDragAndDrop('drop-area', 'preview-image');
@@ -88,6 +92,23 @@ async function loadBooks() {
         booksData = response.books;
         renderBooks(booksData);
         renderPagination(response.total, response.perPage, response.page);
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const bookId = urlParams.get('bookId');
+        
+        if (bookId) {
+            const book = booksData.find(b => b.id == bookId);
+            if (book) {
+                currentBookId = bookId;
+                fillBookDetailsModal(book);
+                openModal('book-details-modal');
+            } else {
+                await openBookById(bookId);
+            }
+            
+            const cleanHash = window.location.hash.split('?')[0];
+            history.replaceState(null, '', cleanHash);
+        }
     } catch (error) {
         console.error('Ошибка загрузки книг:', error);
         alert(error.message);
@@ -272,6 +293,66 @@ function openEditBookModal() {
     fillEditBookModal(book);
     closeModal('book-details-modal');
     openModal('edit-book-modal');
+}
+
+function copyToClipboard(text) {
+    // Пробуем современный метод (работает только на HTTPS)
+    if (navigator.clipboard) {
+        return navigator.clipboard.writeText(text)
+            .then(() => true)
+            .catch(() => fallbackCopy(text)); // При ошибке используем fallback
+    } 
+    // Если clipboard API недоступен
+    return fallbackCopy(text);
+}
+
+function fallbackCopy(text) {
+    return new Promise((resolve, reject) => {
+        // Создаём временный textarea
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        textarea.style.position = 'fixed';
+        textarea.style.opacity = 0;
+        
+        document.body.appendChild(textarea);
+        textarea.select();
+        
+        try {
+            // Пытаемся скопировать через старый метод
+            const success = document.execCommand('copy');
+            document.body.removeChild(textarea);
+            
+            if (success) {
+                resolve(true);
+            } else {
+                reject(new Error('Копирование не поддерживается'));
+            }
+        } catch (err) {
+            document.body.removeChild(textarea);
+            reject(err);
+        }
+    });
+}
+
+function shareBook(bookId) {
+    const baseUrl = window.location.origin + window.location.pathname;
+    const shareUrl = `${baseUrl}#/catalog?bookId=${bookId}`;
+    
+    copyToClipboard(shareUrl)
+        .then(() => alert('Ссылка скопирована в буфер обмена!'))
+        .catch(err => console.error('Ошибка копирования: ', err));
+}
+
+async function openBookById(bookId) {
+    try {
+        const book = await api.getBook(bookId);
+        currentBookId = bookId;
+        fillBookDetailsModal(book);
+        openModal('book-details-modal');
+    } catch (error) {
+        console.error('Ошибка загрузки книги:', error);
+        alert('Книга не найдена');
+    }
 }
 
 function validateBookForm(bookData, formType) {

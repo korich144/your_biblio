@@ -57,6 +57,10 @@ export const api = {
             credentials: 'include'
         }).then(response => response.json());
     },
+
+    async getBook(bookId) {
+        return apiRequest('get_book', { id: bookId }, 'GET');
+    },
     
     async addBook(bookData) {
         checkAuth();

@@ -38,6 +38,10 @@ try {
             handleGetBooks($db, $_GET);
             break;
             
+        case 'get_book':
+            handleGetBook($db, $input);
+            break;
+
         case 'add_book':
             handleAddBook($db, $input);
             break;
@@ -476,6 +480,25 @@ function handleGetBooks($db, $params) {
         'page' => $page,
         'perPage' => $perPage
     ]);
+}
+
+function handleGetBook($db, $data) {
+    if (empty($data['id'])) {
+        throw new Exception('Book ID is required');
+    }
+    
+    $bookId = (int)$data['id'];
+    $result = pg_query_params($db, 
+        "SELECT * FROM books WHERE id = $1", 
+        [$bookId]
+    );
+    
+    $book = pg_fetch_assoc($result);
+    if (!$book) {
+        throw new Exception('Book not found');
+    }
+    
+    echo json_encode($book);
 }
 
 function handleAddBook($db, $data) {
